@@ -4,10 +4,13 @@ name: BCL CI
 on: 
   push:
     paths: 
-      - './bcl/**'
-      - './.github/workflows/bcl-ci.yml'
+      - 'bcl/**'
+      - '.github/workflows/bcl-ci.yml'
     tags-ignore: 
       - '*'
+
+  schedule:
+    - cron: '0 0 * * 0' # Every Sunday at midnight
 
 jobs:
   build: 
