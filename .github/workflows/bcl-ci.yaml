@@ -8,6 +8,8 @@ on:
       - '.github/workflows/bcl-ci.yaml'
     tags-ignore: 
       - '*'
+    branches:
+      - '**'
 
   schedule:
     - cron: '0 0 * * 0' # Every Sunday at midnight
