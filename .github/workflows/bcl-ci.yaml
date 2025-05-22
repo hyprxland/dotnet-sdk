@@ -1,0 +1,38 @@
+name: BCL CI
+
+
+on: 
+  push:
+    paths: 
+      - './bcl/**'
+      - './.github/workflows/bcl-ci.yml'
+    tags-ignore: 
+      - '*'
+
+jobs:
+  build: 
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, windows-2025, macos-14]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: ./bcl
+    steps:
+      - name: 🟣 Setup .NET Core # Required to execute ReportGenerator
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.x
+          dotnet-quality: 'ga'
+
+      - name: 🧳 Checkout
+        uses: actions/checkout@v2
+
+      - name: 🔃 Restore 
+        run: dotnet restore
+
+      - name: 🏭 Build
+        run: dotnet build --configuration Release --no-restore --verbosity normal
+
+      - name: 🧪 Test
+        run: dotnet test --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --settings:coverlet.runsettings

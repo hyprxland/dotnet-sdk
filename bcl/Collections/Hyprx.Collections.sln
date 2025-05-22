@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hyprx.Collections", "src\Hyprx.Collections.csproj", "{37215F74-0F4D-48A0-93C5-28E70035A314}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hyprx.Collections.Tests", "test\Hyprx.Collections.Tests.csproj", "{1D281EBF-E627-4BD1-8927-05FDBD8B464B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{37215F74-0F4D-48A0-93C5-28E70035A314}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37215F74-0F4D-48A0-93C5-28E70035A314}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37215F74-0F4D-48A0-93C5-28E70035A314}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37215F74-0F4D-48A0-93C5-28E70035A314}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D281EBF-E627-4BD1-8927-05FDBD8B464B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D281EBF-E627-4BD1-8927-05FDBD8B464B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D281EBF-E627-4BD1-8927-05FDBD8B464B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D281EBF-E627-4BD1-8927-05FDBD8B464B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

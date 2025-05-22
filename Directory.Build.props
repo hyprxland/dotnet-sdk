@@ -1,0 +1,80 @@
+<Project>
+  <!-- See https://aka.ms/dotnet/msbuild/customize for more details on customizing your build -->
+
+  <PropertyGroup>
+    <BaseRepoUrl>https://github.com/hyprxland/dotnet-sdk</BaseRepoUrl>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Company>hyprx</Company>
+    <Copyright>©️ 2010-2025 Hyprxdev  Hyprxland</Copyright>
+    <RepositoryUrl>$(BaseTreeUrl)</RepositoryUrl> 
+    <RepositoryType>git</RepositoryType> 
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Authors>Jolt9Dev</Authors>
+  
+    <ProjectUrl>$(BaseRepoUrl)</ProjectUrl>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>7</AnalysisLevel>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
+    <LangVersion>latest</LangVersion>
+    <SuppressNETStableSdkPreviewMessage>true</SuppressNETStableSdkPreviewMessage>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CoreFx>net8.0</CoreFx>
+    <NetStandardFx>netstandard2.0</NetStandardFx>
+    <NetFx>net472</NetFx>
+
+    <AppFx>net9.0</AppFx>
+    <BclFx>$(NetStandardFx);$(CoreFx)</BclFx>
+    
+    <Windows>false</Windows>
+    <Linux>false</Linux>
+    <MacOs>false</MacOs>
+    <RootDir>$(MSBuildThisFileDirectory.TrimEnd("/"))</RootDir>
+    <CmnDir>$(MSBuildThisFileDirectory)cmn/src</CmnDir>
+    <AssetsDir>$(MSBuildThisFileDirectory)assets</AssetsDir>
+    <!-- <IconPath>$(MSBuildThisFileDirectory)assets/icon.png</IconPath> -->
+    <NetLegacy>false</NetLegacy>
+    <NetFramework>false</NetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="($(TargetFramework.StartsWith('net4')) OR  $(TargetFramework.StartsWith('netstandard2.0')) OR $(TargetFramework.StartsWith('netstandard1')))">
+    <DefineConstants>$(DefineConstants);NETLEGACY</DefineConstants>
+    <NetLegacy>true</NetLegacy>
+  
+  </PropertyGroup>
+    
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('net4'))">
+    <NetFramework>true</NetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+    <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
+    <Windows>true</Windows>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
+    <DefineConstants>$(DefineConstants);DARWIN</DefineConstants>
+    <MacOs>true</MacOs>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+    <DefineConstants>$(DefineConstants);LINUX</DefineConstants>
+    <Linux>true</Linux> 
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="ReflectionAnalyzers" PrivateAssets="all" />
+    <PackageReference Include="SecurityCodeScan.VS2019"  PrivateAssets="all"/>
+    <PackageReference Include="StyleCop.Analyzers"  PrivateAssets="all"/>
+    <PackageReference Include="SonarAnalyzer.CSharp" PrivateAssets="all"/>
+    <PackageReference Include="Text.Analyzers"  PrivateAssets="all"/>
+    <PackageReference Include="AsyncFixer" PrivateAssets="all"/>
+    <!-- <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="*" PrivateAssets="all" /> -->
+    <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers"  PrivateAssets="all"/>
+  </ItemGroup>
+</Project>

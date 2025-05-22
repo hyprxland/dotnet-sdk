@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Collections", "Collections", "{AE58524C-3E68-4863-961A-7686FCB6EAA1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hyprx.Collections", "Collections\src\Hyprx.Collections.csproj", "{97AC0A43-07EA-4434-A573-11328300C62A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hyprx.Collections.Tests", "Collections\test\Hyprx.Collections.Tests.csproj", "{B78DCC77-C879-4F0B-B63D-90C3202B696A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{97AC0A43-07EA-4434-A573-11328300C62A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97AC0A43-07EA-4434-A573-11328300C62A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97AC0A43-07EA-4434-A573-11328300C62A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97AC0A43-07EA-4434-A573-11328300C62A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B78DCC77-C879-4F0B-B63D-90C3202B696A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B78DCC77-C879-4F0B-B63D-90C3202B696A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B78DCC77-C879-4F0B-B63D-90C3202B696A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B78DCC77-C879-4F0B-B63D-90C3202B696A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{97AC0A43-07EA-4434-A573-11328300C62A} = {AE58524C-3E68-4863-961A-7686FCB6EAA1}
+		{B78DCC77-C879-4F0B-B63D-90C3202B696A} = {AE58524C-3E68-4863-961A-7686FCB6EAA1}
+	EndGlobalSection
+EndGlobal

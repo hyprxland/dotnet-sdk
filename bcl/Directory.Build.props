@@ -1,0 +1,11 @@
+<Project>
+     <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)..\'))" />
+     
+     <PropertyGroup>
+        <Version>0.0.0-alpha.0</Version>
+        <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+        <IsTrimmable Condition="'NetLegacy' == 'false'">true</IsTrimmable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+     </PropertyGroup>
+</Project>
