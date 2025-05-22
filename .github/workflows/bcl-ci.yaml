@@ -5,7 +5,7 @@ on:
   push:
     paths: 
       - 'bcl/**'
-      - '.github/workflows/bcl-ci.yml'
+      - '.github/workflows/bcl-ci.yaml'
     tags-ignore: 
       - '*'
 
