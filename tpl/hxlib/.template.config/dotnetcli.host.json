@@ -1,0 +1,63 @@
+{
+    "$schema": "http://json.schemastore.org/dotnetcli.host",
+    "symbolInfo": {
+        "TargetFrameworkOverride": {
+            "isHidden": "true",
+            "longName": "framework-override",
+            "shortName": ""
+        },
+        "Framework": {
+            "longName": "framework"
+        },
+        "NoFramework": {
+            "longName": "no-framework",
+            "shortName": "nf"
+        },
+        "FrameworkProp": {
+            "longName": "use-framework-prop",
+            "shortName": "ufp"
+        },
+        "RootNamespaceOverride": {
+            "longName": "namespace",
+            "shortName": "ns"
+        },
+        "skipRestore": {
+            "longName": "no-restore",
+            "shortName": ""
+        },
+        "langVersion": {
+            "longName": "lang-version",
+            "shortName": ""
+        },
+        "NoReadme": {
+            "longName": "no-readme",
+            "shortName": "nr"
+        },
+        "AllowUnsafe": {
+            "longName": "unsafe"
+        },
+        "LicenseFile": {
+            "longName": "license",
+            "shortName": "lc"
+        },
+        "ChangeLog": {
+            "longName": "changelog",
+            "shortName": "cl"
+        },
+        "UseLicensePath": {
+            "longName": "use-license-path",
+            "shortName": "lp"
+        },
+        "UseIconPath": {
+            "longName": "use-icon-path",
+            "shortName": "ip"
+        },
+        "UseCLS": {
+            "longName": "cls"
+        }
+    },
+    "usageExamples": [
+        "--framework net9.0",
+        "--no-framework --use-license-prop ---use-icon-prop --polyfill"
+    ]
+}

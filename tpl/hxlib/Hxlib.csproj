@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">  
+  <PropertyGroup>
+    <TargetFramework Condition="'$(NoFramework)' == 'false' AND '$(TargetFrameworkOverride)' == '' AND '$(hasFrameworkProp)' == 'false'">net10.0</TargetFramework>
+    <TargetFramework Condition="'$(NoFramework)' == 'false' AND '$(TargetFrameworkOverride)' != '' AND '$(hasFrameworkProp)' == 'false'">TargetFrameworkOverride</TargetFramework>
+    <TargetFrameworks Condition="'$(NoFramework)' == 'false' AND '$(TargetFrameworkOverride)' == '' AND '$(hasFrameworkProp)' == 'true'">$(FrameworkProp)</TargetFrameworks>
+    <RootNamespace Condition="'$(RootNamespaceOverride)' != ''">RootNamespaceOverride</RootNamespace>
+    <RootNamespace Condition="'$(RootNamespaceOverride)' == ''">Hxlib</RootNamespace>
+    <!--#if(AllowUnsafe)-->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+<!--#endif-->
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!--#if(!NoReadme)-->
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <!--#endif-->
+    <PackageTags>Hxlib</PackageTags>
+    <Description>
+        Hxlib
+    </Description>
+    <!--#if(ChangeLog)-->
+    <PackageReleaseNotes Condition="Exists('$(MSBuildProjectDirectory)/CHANGELOG.md')">
+      $([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/CHANGELOG.md"))
+    </PackageReleaseNotes>
+     <!--#endif-->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--#if(!NoReadme)-->
+    <None Condition="Exists('README.md')" Include="README.md" Pack="true" PackagePath="\"/>
+    <!--#endif-->
+    <!--#if(LicenseFile)-->
+    <None Condition="Exists('LICENSE.md')" Include="LICENSE.md" Pack="true" PackagePath="\"/>
+    <!--#endif-->
+    <!--#if(UseLicensePath)-->
+    <None Condition="Exists('$(LicensePath)')" Include="$(LicensePath)" Pack="true" PackagePath="\"/>
+    <!--#endif-->
+    <!--#if(UseIconPath)-->
+    <None Condition="Exists('$(IconPath)')" Include="$(IconPath)" Pack="true" PackagePath="\" />
+    <!--#endif-->
+  </ItemGroup>
+
+  <!--#if(UseCLS) -->
+  <ItemGroup>
+      <AssemblyAttribute Include="System.CLSCompliant">
+          <_Parameter1>true</_Parameter1>
+          <_Parameter1_IsLiteral>true</_Parameter1_IsLiteral>
+    </AssemblyAttribute>
+  </ItemGroup>
+  <!--#endif-->
+</Project>

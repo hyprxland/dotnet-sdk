@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework Condition="'$(NoFramework)' == 'false' AND '$(TargetFrameworkOverride)' == '' AND '$(hasFrameworkProp)' == 'false'">net10.0</TargetFramework>
+    <TargetFramework Condition="'$(NoFramework)' == 'false' AND '$(TargetFrameworkOverride)' != '' AND '$(hasFrameworkProp)' == 'false'">TargetFrameworkOverride</TargetFramework>
+    <TargetFrameworks Condition="'$(NoFramework)' == 'false' AND '$(TargetFrameworkOverride)' == '' AND '$(hasFrameworkProp)' == 'true'">$(FrameworkProp)</TargetFrameworks>
+    <RootNamespace Condition="'$(RootNamespaceOverride)' != ''">RootNamespaceOverride</RootNamespace>
+    <RootNamespace Condition="'$(RootNamespaceOverride)' == ''">Hxtest</RootNamespace>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <TestingPlatformDotnetTestSupport Condition="'$(UseTestSupport)' == 'true'">true</TestingPlatformDotnetTestSupport>
+    <UseMicrosoftTestingPlatformRunner Condition="'$(UsePlatformRunner)' == 'true'">true</UseMicrosoftTestingPlatformRunner>
+    <!--
+
+    For more information on Microsoft Testing Platform support in xUnit.net, please visit:
+      https://xunit.net/docs/getting-started/v3/microsoft-testing-platform
+    -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Condition="'$(IncludeVersion)' == 'true'" Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageReference Condition="'$(IncludeVersion)' == 'true'" Include="xunit.v3" Version="2.0.2" />
+    <PackageReference Condition="'$(IncludeVersion)' == 'true'" Include="xunit.runner.visualstudio" Version="3.1.0" />
+    <PackageReference Condition="'$(IncludeVersion)' != 'true'" Include="Microsoft.NET.Test.Sdk"  />
+    <PackageReference Condition="'$(IncludeVersion)' != 'true'" Include="xunit.v3"  />
+    <PackageReference Condition="'$(IncludeVersion)' != 'true'" Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+</Project>

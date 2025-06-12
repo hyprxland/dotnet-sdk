@@ -1,0 +1,167 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "hyprxdev",
+    "classifications": [ "Hyprx", "Library", "XUnit3" ], 
+    "name": "Hyprx XUnit3 Test Library",
+    "identity": "Hyprx.Xunit3",         
+    "shortName": "hxtest",                    
+    "tags": {
+      "language": "C#",                         
+      "type":"project"
+    },
+    "sourceName": "Hxtest",              
+    "preferNameDirectory":true,
+    "baselines": {
+    "app": {
+        "description": "Target .NET",
+        "defaultOverrides": {
+          "Framework": "net10.0"
+        }
+      },
+      "standard": {
+        "description": "Target netstandard",
+        "defaultOverrides": {
+          "Framework": "netstandard2.0"
+        }
+      }
+    },
+    "symbols": {
+        "TargetFrameworkOverride": {
+            "type": "parameter",
+            "description": "Overrides the target framework",
+            "replaces": "TargetFrameworkOverride",
+            "datatype": "string",
+            "defaultValue": "",
+            "displayName": "Target framework override"
+        },
+        "FrameworkProp": {
+            "type": "parameter",
+            "description": "Sets the TargetFramework property in the created project file",
+            "replaces": "FrameworkProp",
+            "datatype": "string",
+            "defaultValue": "",
+            "displayName": "Framework property"
+        },
+        "hasFrameworkProp": {
+            "type": "computed",
+            "datatype": "bool",
+            "value": "FrameworkProp != \"\""
+        },
+        "NoFramework": {
+            "type": "parameter",
+            "description": "Do not set the TargetFramework property in the created project file",
+            "datatype": "bool",
+            "defaultValue": "false",
+            "displayName": "No framework"
+        },
+        "RootNamespaceOverride": {
+            "type": "parameter",
+            "description": "The root namespace for the project.",
+            "replaces": "RootNamespaceOverride",
+            "datatype": "string",
+            "defaultValue": "",
+            "displayName": "Root namespace"
+        },
+
+        "Framework": {
+          "type": "parameter",
+          "description": "The target framework for the project.",
+          "datatype": "choice",
+          "choices": [
+        
+            {
+              "choice": "net8.0",
+              "description": "Target net8.0",
+              "displayName": ".NET 8.0"
+            },
+            {
+              "choice": "net9.0",
+              "description": "Target net9.0",
+              "displayName": ".NET 9.0"
+            },
+            {
+              "choice": "net10.0",
+              "description": "Target net10.0",
+              "displayName": ".NET 10.0"
+            },
+            {
+              "choice": "netstandard2.0",
+              "description": "Target netstandard2.0",
+              "displayName": ".NET Standard 2.0"
+            }
+          ],
+          "replaces": "net9.0",
+          "defaultValue": "net10.0",
+          "displayName": "Framework"
+        },
+        "IncludeVersion": {
+           "type": "parameter",
+           "datatype": "bool",
+           "description": "If specified, includes the version for package references.",
+           "defaultValue": "false",
+           "displayName": "Include version"
+        },
+
+        "UseTestSupport": {
+          "type": "parameter",
+          "datatype": "bool",
+          "description": "If specified, adds test support to the xunit v3 project.",
+          "defaultValue": "false",
+          "displayName": "Use test support"
+        },
+
+        "UsePlatformRunner": {
+          "type": "parameter",
+          "datatype": "bool",
+          "description": "If specified, uses the platform runner for xunit v3.",
+          "defaultValue": "false",
+          "displayName": "Use platform runner"
+        },
+     
+      "csharp9orOlder": {
+        "type": "generated",
+        "generator": "regexMatch",
+        "datatype": "bool",
+        "parameters": {
+          "pattern": "^(ISO-1|ISO-2|[1-7]|[8-9]|[8-9]\\.0|7\\.[0-3])$",
+          "source": "langVersion"
+        }
+      },
+      "skipRestore": {
+        "type": "parameter",
+        "datatype": "bool",
+        "description": "If specified, skips the automatic restore of the project on create.",
+        "defaultValue": "false",
+        "displayName": "Skip restore"
+      },
+      "csharp7orOlder": {
+        "type": "generated",
+        "generator": "regexMatch",
+        "datatype": "bool",
+        "parameters": {
+          "pattern": "^(ISO-1|ISO-2|[1-7]|7\\.[0-3])$",
+          "source": "langVersion"
+        }
+      },
+      "csharp10orLater": {
+        "type": "computed",
+        "value": "!csharp9orOlder"
+      },
+      "csharp8orLater": {
+        "type": "computed",
+        "value": "!csharp7orOlder"
+      },
+      "csharpFeature_ImplicitUsings": {
+        "type": "computed",
+        "value": "(Framework == \"net9.0\" || Framework == \"net8.0\") && csharp10orLater == \"true\""
+      },
+      "csharpFeature_FileScopedNamespaces": {
+        "type": "computed",
+        "value": "((Framework == \"net9.0\" || Framework == \"net8.0\") || langVersion != \"\") && csharp10orLater == \"true\""
+      },
+      "csharpFeature_Nullable": {
+        "type": "computed",
+        "value": "(Framework != \"netstandard2.0\" || langVersion != \"\") && csharp8orLater == \"true\""
+      }
+    }
+  }
