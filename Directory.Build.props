@@ -19,6 +19,8 @@
     <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
     <LangVersion>preview</LangVersion>
     <SuppressNETStableSdkPreviewMessage>true</SuppressNETStableSdkPreviewMessage>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup>
