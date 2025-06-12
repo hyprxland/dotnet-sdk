@@ -1,0 +1,25 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageVersionOverrideEnabled>true</CentralPackageVersionOverrideEnabled>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="AsyncFixer" Version="1.6.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="4.14.0" />
+    <PackageVersion Include="Microsoft.Bcl.HashCode" Version="6.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.FileSystemGlobbing" Version="0.0.0-preview.4.25258.110" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageVersion Include="Polyfill" Version="7.33.0" />
+    <PackageVersion Include="ReflectionAnalyzers" Version="0.3.1"/>
+    <PackageVersion Include="SecurityCodeScan.VS2019" Version="5.6.7"/>
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.10.0.116381" />
+    <PackageVersion Include="StyleCop.Analyzers"  Version="1.1.118"/>
+    <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+    <PackageVersion Include="System.Memory" Version="4.6.3" />
+    <PackageVersion Include="System.Memory.Data" Version="9.0.5" />
+    <PackageVersion Include="System.Threading.Tasks.Extensions" Version="4.6.3" />
+    <PackageVersion Include="Text.Analyzers"  Version="4.14.0"/>  
+    <PackageVersion Include="xunit.v3" Version="2.0.2" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.0" />
+  </ItemGroup>
+</Project>
