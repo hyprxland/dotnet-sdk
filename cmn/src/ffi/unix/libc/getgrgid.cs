@@ -11,11 +11,11 @@ internal static partial class FFI
 {
     internal static partial class Libc
     {
-        [LibraryImport("libc", StringMarshalling = StringMarshalling.Utf8, EntryPoint = "getgrgid_r", SetLastError = false)]
-        internal static unsafe partial int GetGrGidR(uint uid, out Group group, byte* buf, int bufLen, out IntPtr groupPtr);
+        [LibraryImport(Libs.LibcName, StringMarshalling = StringMarshalling.Utf8, EntryPoint = "getgrgid_r", SetLastError = false)]
+        internal static unsafe partial int getgrgidr(uint uid, out Group group, byte* buf, int bufLen, out IntPtr groupPtr);
 
-        [LibraryImport("libc", StringMarshalling = StringMarshalling.Utf8, EntryPoint = "getgrnam_r", SetLastError = false)]
-        internal static unsafe partial int GetGrNamR(string name, out Group group, byte* buf, int bufLen, out IntPtr groupPtr);
+        [LibraryImport(Libs.LibcName, StringMarshalling = StringMarshalling.Utf8, EntryPoint = "getgrnam_r", SetLastError = false)]
+        internal static unsafe partial int getgrnamr(string name, out Group group, byte* buf, int bufLen, out IntPtr groupPtr);
 
         internal static unsafe uint? GetGroupId(string name)
         {
@@ -23,7 +23,7 @@ internal static partial class FFI
             var stackBuf = stackalloc byte[size];
             Group group;
             IntPtr groupPtr;
-            int result = GetGrNamR(name, out group, stackBuf, size, out groupPtr);
+            int result = getgrnamr(name, out group, stackBuf, size, out groupPtr);
             if (result == 0)
             {
                 if (groupPtr == IntPtr.Zero)
@@ -41,7 +41,7 @@ internal static partial class FFI
                 var buf = Marshal.AllocHGlobal(size);
                 try
                 {
-                    result = GetGrNamR(name, out group, (byte*)buf, size, out groupPtr);
+                    result = getgrnamr(name, out group, (byte*)buf, size, out groupPtr);
                     if (result == 0)
                     {
                         if (groupPtr == IntPtr.Zero)
