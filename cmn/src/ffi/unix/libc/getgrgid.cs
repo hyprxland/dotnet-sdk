@@ -1,11 +1,6 @@
 using System.Runtime.InteropServices;
 
-#pragma warning disable CS0649
-#pragma warning disable S2344
-#pragma warning disable S2346
-#pragma warning disable SA1025
-#pragma warning disable SA1310
-#pragma warning disable S3903 // Types should be defined in named namespaces
+#pragma warning disable CS0649, SA1025, SA1310
 
 internal static partial class FFI
 {
@@ -73,7 +68,7 @@ internal static partial class FFI
             var stackBuf = stackalloc byte[size];
             Group group;
             IntPtr groupPtr;
-            int result = GetGrGidR(groupId, out group, stackBuf, size, out groupPtr);
+            int result = getgrgidr(groupId, out group, stackBuf, size, out groupPtr);
             if (result == 0)
             {
                 if (groupPtr == IntPtr.Zero)
@@ -82,11 +77,7 @@ internal static partial class FFI
                     return null;
                 }
 
-#if NET7_0_OR_GREATER
                 return Marshal.PtrToStringUTF8((IntPtr)group.Name);
-#else
-                return Marshal.PtrToStringAnsi((IntPtr)group.Name);
-#endif
             }
 
             while (true)
@@ -95,7 +86,7 @@ internal static partial class FFI
                 var buf = Marshal.AllocHGlobal(size);
                 try
                 {
-                    result = GetGrGidR(groupId, out group, (byte*)buf, size, out groupPtr);
+                    result = getgrgidr(groupId, out group, (byte*)buf, size, out groupPtr);
                     if (result == 0)
                     {
                         if (groupPtr == IntPtr.Zero)
@@ -104,11 +95,7 @@ internal static partial class FFI
                             return null;
                         }
 
-#if NET7_0_OR_GREATER
                         return Marshal.PtrToStringUTF8((IntPtr)group.Name);
-#else
-                        return Marshal.PtrToStringAnsi((IntPtr)group.Name);
-#endif
                     }
 
                     if (result == 0x10047)
