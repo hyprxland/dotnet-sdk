@@ -7,14 +7,6 @@ namespace Hyprx.Results.Tests;
 public class Resuls2Tests
 {
     [Fact]
-    public void DefaultConstructor_CreatesErrorResult()
-    {
-        var result = new Result<string, string>();
-        Assert.False(result.IsOk);
-        Assert.True(result.IsError);
-    }
-
-    [Fact]
     public void ValueConstructor_CreatesSuccessResult()
     {
         var result = Result<string, string>.Ok("success");

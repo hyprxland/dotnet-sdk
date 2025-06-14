@@ -10,21 +10,6 @@ public class Result<TValue, TError> : IValueResult<TValue, TError>,
 
     private readonly TError? error;
 
-    public Result()
-    {
-        if (typeof(TValue).IsValueType && !typeof(TValue).IsGenericType)
-        {
-            this.value = default(TValue);
-            this.IsOk = true;
-            this.error = default;
-            return;
-        }
-
-        this.value = (TValue)Activator.CreateInstance(typeof(TValue)) !;
-        this.IsOk = this.value is not null;
-        this.error = default;
-    }
-
     internal Result(TValue? value, TError? error, bool isOk)
     {
         this.value = value;
