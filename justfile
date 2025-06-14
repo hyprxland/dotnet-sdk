@@ -17,12 +17,12 @@ tpl cmd='add' :
 
         install|add|i|a|r)
             dotnet new install ./tpl/hxlib --force
-            dotnet new install ./tpl/hxtest --force
+            dotnet new install ./tpl/Hyprx.Devest --force
             ;;
       
         uninstall|remove|r|u)
             dotnet new uninstall ./tpl/hxlib
-            dotnet new uninstall ./tpl/hxtest
+            dotnet new uninstall ./tpl/Hyprx.Devest
             ;;
         *)
             echo "Invalid command {{ cmd }}"

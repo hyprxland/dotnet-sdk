@@ -4,12 +4,12 @@
     "classifications": [ "Hyprx", "Library", "XUnit3" ], 
     "name": "Hyprx XUnit3 Test Library",
     "identity": "Hyprx.Xunit3",         
-    "shortName": "hxtest",                    
+    "shortName": "Hyprx.Devest",                    
     "tags": {
       "language": "C#",                         
       "type":"project"
     },
-    "sourceName": "Hxtest",              
+    "sourceName": "Hyprx.Devest",              
     "preferNameDirectory":true,
     "baselines": {
     "app": {

@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 
 namespace Hyprx.Exec;
@@ -6,9 +7,24 @@ public class Command<TCommand, TOptions> : ICommandOptionsOwner
     where TCommand : Command<TCommand, TOptions>, new()
     where TOptions : CommandOptions, new()
 {
+
     public TOptions Options { get; set; } = new();
 
     CommandOptions ICommandOptionsOwner.Options => this.Options;
+
+    protected CancellationToken? CancellationToken { get; set; }
+
+    public virtual ValueTaskAwaiter<Output> GetAwaiter()
+    {
+        var token = this.CancellationToken ?? default;
+        return this.RunAsync(token).GetAwaiter();
+    }
+
+    public TCommand WithCancellationToken(CancellationToken cancellationToken)
+    {
+        this.CancellationToken = cancellationToken;
+        return (TCommand)this;
+    }
 
     public TCommand WithExecutable(string executable)
     {

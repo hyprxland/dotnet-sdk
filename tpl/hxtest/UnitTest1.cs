@@ -1,4 +1,4 @@
-namespace Hxtest;
+namespace Hyprx.Devest;
 
 public class UnitTest1
 {

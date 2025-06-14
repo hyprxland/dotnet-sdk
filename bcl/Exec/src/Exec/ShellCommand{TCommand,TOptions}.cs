@@ -7,21 +7,13 @@ public class ShellCommand<TCommand, TOptions> : Command<TCommand, TOptions>
     where TCommand : ShellCommand<TCommand, TOptions>, new()
     where TOptions : ShellCommandOptions, new()
 {
-    private CancellationToken? cancellationToken;
-
-    public ValueTaskAwaiter<Output> GetAwaiter()
+    public override ValueTaskAwaiter<Output> GetAwaiter()
     {
-        var token = this.cancellationToken ?? default;
+        var token = this.CancellationToken ?? default;
         if (this.Options.Script.IsNullOrWhiteSpace())
             return this.RunAsync(token).GetAwaiter();
 
         return this.RunScriptAsync(token).GetAwaiter();
-    }
-
-    public TCommand WithCancellationToken(CancellationToken cancellationToken)
-    {
-        this.cancellationToken = cancellationToken;
-        return (TCommand)this;
     }
 
     public TCommand WithScript(string script)

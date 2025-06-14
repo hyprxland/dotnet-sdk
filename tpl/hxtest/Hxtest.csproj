@@ -5,7 +5,7 @@
     <TargetFramework Condition="'$(NoFramework)' == 'false' AND '$(TargetFrameworkOverride)' != '' AND '$(hasFrameworkProp)' == 'false'">TargetFrameworkOverride</TargetFramework>
     <TargetFrameworks Condition="'$(NoFramework)' == 'false' AND '$(TargetFrameworkOverride)' == '' AND '$(hasFrameworkProp)' == 'true'">$(FrameworkProp)</TargetFrameworks>
     <RootNamespace Condition="'$(RootNamespaceOverride)' != ''">RootNamespaceOverride</RootNamespace>
-    <RootNamespace Condition="'$(RootNamespaceOverride)' == ''">Hxtest</RootNamespace>
+    <RootNamespace Condition="'$(RootNamespaceOverride)' == ''">Hyprx.Devest</RootNamespace>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
     <TestingPlatformDotnetTestSupport Condition="'$(UseTestSupport)' == 'true'">true</TestingPlatformDotnetTestSupport>

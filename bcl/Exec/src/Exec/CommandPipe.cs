@@ -1,4 +1,5 @@
 namespace Hyprx.Exec;
+
 public class CommandPipe
 {
     public List<CommandOptions> Commands { get; set; } = [];

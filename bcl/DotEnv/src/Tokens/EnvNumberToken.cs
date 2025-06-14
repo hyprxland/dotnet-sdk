@@ -29,12 +29,12 @@ public class EnvNumberToken : EnvScalarToken<double>
 
     public override EnvTokenType Type => EnvTokenType.Number;
 
-    public static bool TryParse(char[] rawValue,  out EnvNumberToken? token)
+    public static bool TryParse(char[] rawValue, out EnvNumberToken? token)
     {
         return TryParse(rawValue, null, null, out token);
     }
 
-    public static bool TryParse(char[] rawValue, int lineNumber, int columnNumber,  out EnvNumberToken? token)
+    public static bool TryParse(char[] rawValue, int lineNumber, int columnNumber, out EnvNumberToken? token)
     {
         token = null;
 
@@ -72,7 +72,7 @@ public class EnvNumberToken : EnvScalarToken<double>
         return false;
     }
 
-    public static bool TryParse(char[] rawValue, Mark? start, Mark? end,  out EnvNumberToken? token)
+    public static bool TryParse(char[] rawValue, Mark? start, Mark? end, out EnvNumberToken? token)
     {
         token = null;
 

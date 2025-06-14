@@ -270,7 +270,7 @@ namespace Hyprx.Crypto
 
         private static void WriteInt(uint i, byte[] arr, int offset)
         {
-            #pragma warning disable CS8602, S2259
+#pragma warning disable CS8602, S2259
             unchecked
             {
                 Debug.Assert(arr != null);

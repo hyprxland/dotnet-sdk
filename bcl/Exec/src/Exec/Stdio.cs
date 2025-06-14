@@ -1,4 +1,5 @@
 namespace Hyprx.Exec;
+
 public enum Stdio
 {
     Inherit = 0,
