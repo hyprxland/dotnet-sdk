@@ -2,9 +2,10 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(Fx)</TargetFrameworks>
-    <RootNamespace>Hyprx.Ansi.Tests</RootNamespace>
+    <RootNamespace>Hyprx</RootNamespace>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
     <!--
 
     For more information on Microsoft Testing Platform support in xUnit.net, please visit:
@@ -24,6 +25,10 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk"  />
     <PackageReference Include="xunit.v3"  />
     <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../src/Hyprx.Ansi.csproj" />
   </ItemGroup>
 
 </Project>
