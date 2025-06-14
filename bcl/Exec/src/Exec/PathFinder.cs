@@ -71,7 +71,7 @@ public class PathFinder
             IEnumerable<string> matches = Array.Empty<string>();
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                var pathExt = Env.TryGetEnv("PATHEXT").OrDefault(string.Empty);
+                var pathExt = Env.TryGet("PATHEXT").OrDefault(string.Empty);
                 if (pathExt.IsNullOrWhiteSpace())
                 {
                     // XP's system default value for PATHEXT system variable
@@ -235,7 +235,7 @@ public class PathFinder
 
         if (!entry.Variable.IsNullOrWhiteSpace())
         {
-            var envPath = Env.TryGetEnv(entry.Variable);
+            var envPath = Env.TryGet(entry.Variable);
             if (envPath.IsOk)
             {
                 if (!entry.CachedPath.IsNullOrWhiteSpace() && envPath == entry.CachedPath)

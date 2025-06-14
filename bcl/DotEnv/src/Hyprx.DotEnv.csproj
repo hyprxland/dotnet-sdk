@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">  
   <PropertyGroup>
     <TargetFrameworks>$(Fx)</TargetFrameworks>
-    <RootNamespace>Hyprx.Secrets</RootNamespace>
+    <RootNamespace>Hyprx.DotEnv</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageTags>Hyprx.Secrets</PackageTags>
+    <PackageTags>Hyprx.DotEnv</PackageTags>
     <Description>
-        Hyprx.Secrets
+        Hyprx.DotEnv
     </Description>
     <PackageReleaseNotes Condition="Exists('$(MSBuildProjectDirectory)/CHANGELOG.md')">
       $([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/CHANGELOG.md"))
@@ -33,4 +33,15 @@
     <PackageReference Include="System.Memory" />
     <PackageReference Include="Polyfill" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(BclDir)/Core/src/*.csproj" /> 
+  </ItemGroup>
+
+  
+  <Target Name="Echo" BeforeTargets="Build">
+    <Message Text="Building Hyprx.DotEnv with BCL directory: $(BclDir)" Importance="high"/>
+    <Message Text="$(BclDir)/Core/src/*.csproj" Importance="high"/>
+  </Target>
+  
 </Project>

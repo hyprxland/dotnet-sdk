@@ -60,7 +60,7 @@ public static class Env
 
         Array.Resize(ref paths, paths.Length + 1);
         paths[^1] = path;
-        SetEnv(OperatingSystem.IsWindows() ? "Path" : "PATH", JoinPath(paths), target);
+        Set(OperatingSystem.IsWindows() ? "Path" : "PATH", JoinPath(paths), target);
     }
 
     /// <summary>
@@ -461,7 +461,7 @@ public static class Env
         var copy = new string[paths.Length + 1];
         Array.Copy(paths, 0, copy, 1, paths.Length);
         copy[0] = path;
-        SetEnv(OperatingSystem.IsWindows() ? "Path" : "PATH", JoinPath(copy), target);
+        Set(OperatingSystem.IsWindows() ? "Path" : "PATH", JoinPath(copy), target);
     }
 
     /// <summary>
@@ -498,7 +498,7 @@ public static class Env
         if (newPaths.Count == paths.Length)
             return; // No change, path was not found.
 
-        SetEnv(OperatingSystem.IsWindows() ? "Path" : "PATH", JoinPath(newPaths.ToArray()), target);
+        Set(OperatingSystem.IsWindows() ? "Path" : "PATH", JoinPath(newPaths.ToArray()), target);
     }
 
     /// <summary>
@@ -515,7 +515,7 @@ public static class Env
     /// Default is <see cref="EnvironmentVariableTarget.Process"/>.
     /// </param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void SetEnv(string variable, string value, EnvironmentVariableTarget target = EnvironmentVariableTarget.Process)
+    public static void Set(string variable, string value, EnvironmentVariableTarget target = EnvironmentVariableTarget.Process)
         => Environment.SetEnvironmentVariable(variable, value, target);
 
     /// <summary>
@@ -559,7 +559,7 @@ public static class Env
     /// <returns>
     /// A <see cref="ValueResult"/> representing the outcome of the operation.
     /// </returns>
-    public static ValueResult TryAppendEnvPath(string path, EnvironmentVariableTarget target = EnvironmentVariableTarget.Process)
+    public static ValueResult TryAppendPath(string path, EnvironmentVariableTarget target = EnvironmentVariableTarget.Process)
     {
         if (path.IsNullOrWhiteSpace())
             return new ArgumentNullException(nameof(path), "Path cannot be null or empty.");
@@ -599,9 +599,9 @@ public static class Env
     /// <returns>
     /// A <see cref="ValueResult{T}"/> representing the outcome of the operation.
     /// </returns>
-    public static ValueResult<string> TryExpandEnv(string template, EnvExpandOptions? options = null)
+    public static ValueResult<string> TryExpand(string template, EnvExpandOptions? options = null)
     {
-        var result = TryExpandEnv(template.AsSpan(), options);
+        var result = TryExpand(template.AsSpan(), options);
         if (result.IsOk)
             return result.Value.Span.AsString();
         return result.Error;
@@ -619,7 +619,7 @@ public static class Env
     /// <returns>
     /// A <see cref="ValueResult{T}"/> representing the outcome of the operation.
     /// </returns>
-    public static ValueResult<ReadOnlyMemory<char>> TryExpandEnv(ReadOnlySpan<char> template, EnvExpandOptions? options = null)
+    public static ValueResult<ReadOnlyMemory<char>> TryExpand(ReadOnlySpan<char> template, EnvExpandOptions? options = null)
     {
         var o = options ?? new EnvExpandOptions();
         Func<string, string?> getValue = o.GetVariable ?? Environment.GetEnvironmentVariable;
@@ -858,7 +858,7 @@ public static class Env
     /// <returns>
     /// A <see cref="ValueResult{T}"/> representing the outcome of the operation.
     /// </returns>
-    public static ValueResult<string> TryGetEnv(string variable, EnvironmentVariableTarget target = EnvironmentVariableTarget.Process)
+    public static ValueResult<string> TryGet(string variable, EnvironmentVariableTarget target = EnvironmentVariableTarget.Process)
     {
         if (string.IsNullOrEmpty(variable))
             return new ValueResult<string>(new EnvironmentException("Environment variable key cannot be null or empty."));
@@ -1017,7 +1017,7 @@ public static class Env
 
         try
         {
-            SetEnv(OperatingSystem.IsWindows() ? "Path" : "PATH", path, target);
+            Set(OperatingSystem.IsWindows() ? "Path" : "PATH", path, target);
             return OkRef();
         }
         catch (Exception ex)
@@ -1055,7 +1055,7 @@ public static class Env
     /// </returns>
     public static ValueResult<string[]> TrySplitEnvPath(EnvironmentVariableTarget target = EnvironmentVariableTarget.Process)
     {
-        var result = TryGetEnv(OperatingSystem.IsWindows() ? "Path" : "PATH", target);
+        var result = TryGet(OperatingSystem.IsWindows() ? "Path" : "PATH", target);
         if (result.IsError)
             return result.Error;
 
