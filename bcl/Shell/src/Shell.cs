@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.Versioning;
 
 using Hyprx.Exec;
 
@@ -72,29 +73,73 @@ public static partial class Shell
         System.Environment.Exit(exitCode);
     }
 
-    public static Command Cmd(CommandArgs args)
+    public static Command Command(CommandArgs args)
         => new Command(args);
 
-    public static Command Cmd(CommandOptions options)
+    public static Command Command(CommandOptions options)
         => new Command(options);
 
     public static Output Run(CommandArgs args)
-        => new Command(args).Run();
-
-    public static Output Run(CommandOptions options)
-        => new Command(options).Run();
+        => new Command().Run(args);
 
     public static ValueTask<Output> RunAsync(CommandArgs args, CancellationToken cancellationToken = default)
-        => new Command(args).RunAsync(cancellationToken);
+        => new Command().RunAsync(args, cancellationToken);
 
-    public static ValueTask<Output> RunAsync(CommandOptions options, CancellationToken cancellationToken = default)
-        => new Command(options).RunAsync(cancellationToken);
+    public static BashCommand Bash()
+        => new BashCommand();
 
-    public static Output Bash(string script)
-        => new BashCommand().RunScript(script);
+    public static BashCommand Bash(string script)
+        => new BashCommand(script);
 
-    public static ValueTask<Output> BashAsync(string script, CancellationToken cancellationToken = default)
-        => new BashCommand().RunScriptAsync(script, cancellationToken);
+    public static BunCommand Bun()
+        => new BunCommand();
+
+    public static BunCommand Bun(string script)
+        => new BunCommand(script);
+
+    [SupportedOSPlatform("windows")]
+    public static WinCommand Cmd()
+        => new WinCommand();
+
+    [SupportedOSPlatform("windows")]
+    public static WinCommand Cmd(string script)
+        => new WinCommand(script);
+
+    public static DenoCommand Deno()
+        => new DenoCommand();
+
+    public static DenoCommand Deno(string script)
+        => new DenoCommand(script);
+
+    public static PwshCommand Pwsh()
+        => new PwshCommand();
+
+    public static PwshCommand Pwsh(string script)
+        => new PwshCommand(script);
+
+    public static PowershellCommand Powershell()
+        => new PowershellCommand();
+
+    public static PowershellCommand Powershell(string script)
+        => new PowershellCommand(script);
+
+    public static NodeJsCommand Node()
+        => new NodeJsCommand();
+
+    public static NodeJsCommand Node(string script)
+        => new NodeJsCommand(script);
+
+    public static PythonCommand Python()
+        => new PythonCommand();
+
+    public static PythonCommand Python(string script)
+        => new PythonCommand(script);
+
+    public static RubyCommand Ruby()
+        => new RubyCommand();
+
+    public static RubyCommand Ruby(string script)
+        => new RubyCommand(script);
 
     public static string? ReadLine()
         => Console.ReadLine();
@@ -246,15 +291,15 @@ public static partial class Shell
     public static string? Which(string command, IEnumerable<string>? prependPaths = null, bool useCache = true)
         => PathFinder.Which(command, prependPaths, useCache);
 
-    public static string? FindExecutable(string command)
+    public static string? FindExe(string command)
         => PathFinder.Default.Find(command);
 
-    public static string FindExecutableOrThrow(string command)
+    public static string FindExeOrThrow(string command)
        => PathFinder.Default.FindOrThrow(command);
 
-    public static void RegisterExecutablePathHint(string name, Action<PathHint> registerHint)
+    public static void RegisterExePathHint(string name, Action<PathHint> registerHint)
         => PathFinder.Default.RegisterOrUpdate(name, registerHint);
 
     public static void SetGlobalWriteCommand(Action<ProcessStartInfo>? writeCommand)
-        => Command.SetGlobalWriteCommand(writeCommand);
+        => Exec.Command.SetGlobalWriteCommand(writeCommand);
 }
