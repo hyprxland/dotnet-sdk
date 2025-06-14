@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 
 namespace Hyprx.Exec;
@@ -6,6 +7,53 @@ public class ShellCommand<TCommand, TOptions> : Command<TCommand, TOptions>
     where TCommand : ShellCommand<TCommand, TOptions>, new()
     where TOptions : ShellCommandOptions, new()
 {
+    private CancellationToken? cancellationToken;
+
+    public ValueTaskAwaiter<Output> GetAwaiter()
+    {
+        var token = this.cancellationToken ?? default;
+        if (this.Options.Script.IsNullOrWhiteSpace())
+            return this.RunAsync(token).GetAwaiter();
+
+        return this.RunScriptAsync(token).GetAwaiter();
+    }
+
+    public TCommand WithCancellationToken(CancellationToken cancellationToken)
+    {
+        this.cancellationToken = cancellationToken;
+        return (TCommand)this;
+    }
+
+    public TCommand WithScript(string script)
+    {
+        this.Options.Script = script;
+        return (TCommand)this;
+    }
+
+    public TCommand WithScriptArgs(CommandArgs args)
+    {
+        this.Options.ScriptArgs = args ?? [];
+        return (TCommand)this;
+    }
+
+    public TCommand AddScriptArgs(params string[] args)
+    {
+        this.Options.ScriptArgs.AddRange(args ?? []);
+        return (TCommand)this;
+    }
+
+    public TCommand WithRunScriptAsFile(bool useScriptAsFile = true)
+    {
+        this.Options.UseScriptAsFile = useScriptAsFile;
+        return (TCommand)this;
+    }
+
+    public TCommand WithDefaultExtension(string? defaultExtension)
+    {
+        this.Options.DefaultExtension = defaultExtension;
+        return (TCommand)this;
+    }
+
     public Output OutputScript()
     {
         this.Options.Stdout = Stdio.Piped;
