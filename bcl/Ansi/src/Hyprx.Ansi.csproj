@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">  
+  <PropertyGroup>
+    <TargetFrameworks>$(Fx)</TargetFrameworks>
+    <RootNamespace>Hyprx</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>Hyprx Ansi Color Terminal</PackageTags>
+    <Description>
+        Hyprx.Ansi
+    </Description>
+    <PackageReleaseNotes Condition="Exists('$(MSBuildProjectDirectory)/CHANGELOG.md')">
+      $([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/CHANGELOG.md"))
+    </PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Condition="Exists('README.md')" Include="README.md" Pack="true" PackagePath="\"/>
+    <None Condition="Exists('$(LicensePath)')" Include="$(LicensePath)" Pack="true" PackagePath="\"/>
+    <None Condition="Exists('$(IconPath)')" Include="$(IconPath)" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+      <AssemblyAttribute Include="System.CLSCompliant">
+          <_Parameter1>true</_Parameter1>
+          <_Parameter1_IsLiteral>true</_Parameter1_IsLiteral>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="$(CmnDir)/ffi/win32/Libs.cs" Link="FFI/Win32/Libs.cs" />
+    <Compile Include="$(CmnDir)/ffi/win32/kernel32/GetConsoleMode.cs" Link="FFI/Win32/Kernel32/GetConsoleMode.cs" />
+    <Compile Include="$(CmnDir)/ffi/win32/kernel32/GetStdHandle.cs" Link="FFI/Win32/Kernel32/GetStdHandle.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(BclDir)/Colors.Primitives/src/*.csproj" />
+  </ItemGroup>
+</Project>
