@@ -1,3 +1,4 @@
+using Hyprx.Dev.Collections;
 using Hyprx.Dev.Execution;
 using Hyprx.Dev.Tasks;
 using Hyprx.Extras;
@@ -171,4 +172,97 @@ public class RunJobMiddleware : IPipelineMiddleware<JobPipelineContext>
             context.Bus.Send(new JobFailed(data, ex));
         }
     }
+}
+
+public class RunJobsSequentiallyMiddleware : IPipelineMiddleware<JobsPipelineContext>
+{
+    public async Task NextAsync(JobsPipelineContext context, Func<Task> next, CancellationToken cancellationToken = default)
+    {
+        var jobs = context.Jobs;
+        var targets = context.Targets;
+
+        var cycles = jobs.DetectCyclycalReferences();
+        if (cycles.Count > 0)
+        {
+            context.Status = RunStatus.Failed;
+            context.Exception = new InvalidOperationException($"Cyclical job references detected: {string.Join(", ", cycles)}");
+
+            context.Bus.Send(new JobFoundCyclycalReferences(cycles));
+            return;
+        }
+
+        var missingDeps = jobs.DetectMissingDependencies();
+        if (missingDeps.Count > 0)
+        {
+            context.Status = RunStatus.Failed;
+            context.Exception = new InvalidOperationException($"Missing job dependencies detected: {string.Join(", ", missingDeps.Select(kvp => $"{kvp.item} -> {string.Join(", ", kvp.missing)}"))}");
+
+            context.Bus.Send(new JobFoundMissingDependencies(missingDeps));
+            return;
+        }
+
+        var jobsMap = new JobMap();
+        foreach (var target in targets)
+        {
+            if (jobs.TryGetValue(target, out var job))
+            {
+                jobsMap[target] = job;
+            }
+            else
+            {
+                context.Status = RunStatus.Failed;
+                context.Exception = new KeyNotFoundException($"Job '{target}' not found.");
+                return;
+            }
+        }
+
+        var flattened = jobs.Flatten(jobsMap.Values.ToList());
+        if (flattened.IsError)
+        {
+            context.Status = RunStatus.Failed;
+            context.Exception = flattened.Error;
+            return;
+        }
+
+        var jobSet = flattened.Value;
+
+        var outputs = new Outputs(context.Outputs);
+
+        foreach (var job in jobSet)
+        {
+            var pipeline = context.GetService<JobPipeline>() ?? new JobPipeline();
+            var nextContext = new JobPipelineContext(context, job, new CodeJobData() { Id = job.Id, Name = job.Name ?? job.Id, });
+
+            var result = await pipeline.RunAsync(nextContext, cancellationToken);
+
+            foreach (var kvp in nextContext.Outputs)
+            {
+                if (kvp.Key.StartsWith("jobs.", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!context.Outputs.ContainsKey(kvp.Key))
+                    {
+                        context.Outputs[kvp.Key] = kvp.Value;
+                    }
+                }
+            }
+
+            context.Results.Add(result);
+
+            if (context.Status is not RunStatus.Failed)
+            {
+                if (result.Status is RunStatus.Failed)
+                {
+                    context.Status = RunStatus.Failed;
+                    context.Exception = result.Error;
+                }
+                else if (result.Status is RunStatus.Cancelled)
+                {
+                    context.Status = RunStatus.Cancelled;
+                }
+            }
+        }
+
+        await next();
+    }
+
 }

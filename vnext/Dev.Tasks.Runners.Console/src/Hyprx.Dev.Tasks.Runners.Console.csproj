@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">  
+  <PropertyGroup>
+    <TargetFrameworks>$(Fx)</TargetFrameworks>
+    <RootNamespace>Hyprx.Dev.Tasks.Runners.Console</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>Hyprx.Dev.Tasks.Runners.Console</PackageTags>
+    <Description>
+        Hyprx.Dev.Tasks.Runners.Console
+    </Description>
+    <PackageReleaseNotes Condition="Exists('$(MSBuildProjectDirectory)/CHANGELOG.md')">
+      $([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/CHANGELOG.md"))
+    </PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Condition="Exists('README.md')" Include="README.md" Pack="true" PackagePath="\" />
+    <None Condition="Exists('$(LicensePath)')" Include="$(LicensePath)" Pack="true" PackagePath="\" />
+    <None Condition="Exists('$(IconPath)')" Include="$(IconPath)" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+      <AssemblyAttribute Include="System.CLSCompliant">
+          <_Parameter1>true</_Parameter1>
+          <_Parameter1_IsLiteral>true</_Parameter1_IsLiteral>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../../bcl/DotEnv/src/Hyprx.DotEnv.csproj" />
+    <ProjectReference Include="../../Dev.Tasks.Abstractions/src/Hyprx.Dev.Tasks.Abstractions.csproj" />
+    <ProjectReference Include="../../Dev.Tasks.Pipelines/src/Hyprx.Dev.Tasks.Pipelines.csproj" />
+    <ProjectReference Include="../../Lodi/src/Hyprx.Lodi.csproj" />
+  </ItemGroup>
+</Project>

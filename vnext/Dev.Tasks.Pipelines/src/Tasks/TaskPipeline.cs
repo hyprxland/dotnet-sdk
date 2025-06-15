@@ -183,7 +183,7 @@ public class ExecuteTaskMiddleware : IPipelineMiddleware<TaskPipelineContext>
                     }
                 }
 
-                if (result.IsError)
+                if (result.IsOk)
                 {
                     context.Result.Ok(result.Value);
                     context.Bus.Send(new TaskCompleted(data));

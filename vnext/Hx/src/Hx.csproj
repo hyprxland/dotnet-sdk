@@ -7,4 +7,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="../../../bcl/Shell/src/Hyprx.Shell.csproj" />
+    <ProjectReference Include="../../Dev.Tasks.Runners.Console/src/Hyprx.Dev.Tasks.Runners.Console.csproj" />
+  </ItemGroup>
+
 </Project>

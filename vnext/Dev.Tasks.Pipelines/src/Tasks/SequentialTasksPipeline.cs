@@ -65,8 +65,13 @@ public class ExecuteTasksSequentialMiddleware : IPipelineMiddleware<SequentialTa
     {
         var targets = context.Targets;
         var tasks = context.Tasks;
+        foreach (var kvp in tasks)
+        {
+            Console.WriteLine($"Task: {kvp.Key} -> Needs: [{string.Join(", ", kvp.Value.Needs)}]");
+        }
+
         var cyclesResult = tasks.DetectCyclycalReferences();
-        var bus = context.Services.GetService(typeof(IMessageBus)) as IMessageBus;
+        var bus = context.Bus;
         if (bus is null)
         {
             context.Exception = new InvalidOperationException("Message bus not available in the service provider.");

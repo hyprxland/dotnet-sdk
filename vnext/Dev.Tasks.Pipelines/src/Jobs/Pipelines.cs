@@ -8,6 +8,8 @@ public class JobPipeline : Pipeline<JobPipelineContext, JobResult>
 {
     public JobPipeline()
     {
+        this.Use(new RunJobMiddleware());
+        this.Use(new ApplyJobContextMiddleware());
     }
 
     public override async Task<JobResult> RunAsync(JobPipelineContext context, CancellationToken cancellationToken = default)
@@ -36,6 +38,7 @@ public class SequentialJobsPipeline : Pipeline<JobsPipelineContext, JobsSummary>
 {
     public SequentialJobsPipeline()
     {
+        this.Use(new RunJobsSequentiallyMiddleware());
     }
 
     public override async Task<JobsSummary> RunAsync(JobsPipelineContext context, CancellationToken cancellationToken = default)

@@ -24,5 +24,5 @@ public class JobMap : DependencyMap<CodeJob>
     {
     }
 
-    public static JobMap Default { get; } = new JobMap();
+    public static JobMap Global { get; } = new JobMap();
 }

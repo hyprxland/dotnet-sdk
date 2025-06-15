@@ -27,6 +27,14 @@ public abstract class Pipeline<TContext, TOutput>
         var prevIndex = -1;
 
         var ordered = this.middlewares.ToList();
+        Console.WriteLine($"Pipeline {this.GetType().Name} middlewares:");
+        foreach (var mw in ordered)
+        {
+            Console.WriteLine($" - {mw.GetType().Name}");
+        }
+
+        Console.WriteLine($"Total {ordered.Count} middlewares.");
+
         ordered.Reverse();
 
         async Task Run(int index, TContext ctx, CancellationToken token)
@@ -39,6 +47,11 @@ public abstract class Pipeline<TContext, TOutput>
             if (index == prevIndex)
             {
                 throw new InvalidOperationException("Middleware cannot be executed multiple times in a single pipeline run.");
+            }
+
+            if (index >= ordered.Count)
+            {
+                return;
             }
 
             prevIndex = index;

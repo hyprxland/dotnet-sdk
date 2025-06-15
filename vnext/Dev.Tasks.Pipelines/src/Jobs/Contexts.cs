@@ -29,7 +29,7 @@ public class JobsPipelineContext : BusContext
         : base(context)
     {
 
-        this.Jobs = jobs ?? JobMap.Default;
+        this.Jobs = jobs ?? JobMap.Global;
         this.Targets = targets ?? Array.Empty<string>();
     }
 
