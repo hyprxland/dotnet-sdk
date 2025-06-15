@@ -1,0 +1,5 @@
+# Hyprx.Rex.Core Changelog
+
+## 0.0.0
+
+- features

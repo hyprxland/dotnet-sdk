@@ -34,6 +34,7 @@
     <RootDir>$(MSBuildThisFileDirectory.TrimEnd("/"))</RootDir>
     <CmnDir>$(MSBuildThisFileDirectory)cmn/src</CmnDir>
     <BclDir>$(MSBuildThisFileDirectory)bcl</BclDir>
+    <RexDir>$(MSBuildThisFileDirectory)rex</RexDir>
     <AlphaDir>$(MSBuildThisFileDirectory)alpha</AlphaDir>
     <LibDir>$(MSBuildThisFileDirectory)lib</LibDir>
     <AssetsDir>$(MSBuildThisFileDirectory)assets</AssetsDir>
