@@ -31,5 +31,6 @@
   <ItemGroup>
     <ProjectReference Include="$(RexDir)/Core/src/*.csproj" />
     <ProjectReference Include="$(BclDir)/Core/src/*.csproj" />
+    <ProjectReference Include="$(BclDir)/Secrets/src/*.csproj" />
   </ItemGroup>
 </Project>

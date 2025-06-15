@@ -8,7 +8,10 @@ public static class DotEnvLoader
     public static DotEnvDocument Parse(DotEnvLoadOptions options)
     {
         if (options.Files.Count == 1 && options.Content is null)
-            return Serializer.DeserializeDocument(options.Files[0], options);
+        {
+            var fs = File.OpenRead(options.Files[0]);
+            return Serializer.DeserializeDocument(fs, options);
+        }
         else if (options.Files.Count == 0 && options.Content is not null)
             return Serializer.DeserializeDocument(options.Content, options);
         else if (options.Files.Count == 0 && options.Content is null)
@@ -21,7 +24,9 @@ public static class DotEnvLoader
             {
                 var clone = (DotEnvLoadOptions)options.Clone();
                 clone.ExpandVariables = doc;
-                var d = (IDictionary<string, string>)DotEnvSerializer.DeserializeDocument(file, options);
+            
+                using var fs = File.OpenRead(file);
+                var d = (IDictionary<string, string>)DotEnvSerializer.DeserializeDocument(fs, options);
                 foreach (var pair in d)
                 {
                     doc[pair.Key] = pair.Value;

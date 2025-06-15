@@ -2,6 +2,7 @@ using Hyprx.Extras;
 using Hyprx.Rex.Collections;
 using Hyprx.Rex.Execution;
 using Hyprx.Rex.Messaging;
+using Hyprx.Secrets;
 
 namespace Hyprx.Rex.Tasks;
 
@@ -132,24 +133,26 @@ public class ExecuteTasksSequentialMiddleware : IPipelineMiddleware<SequentialTa
             context.Outputs.Add($"task.{task.Id}", r.Output);
             context.Outputs.Add(task.Id, r.Output);
 
+            var masker = context.Services.GetService(typeof(ISecretMasker)) as ISecretMasker;
+
             foreach (var kvp in nextCtx.Secrets)
             {
                 if (context.Secrets.TryGetValue(kvp.Key, out var existingValue))
                 {
                     if (existingValue != kvp.Value)
                     {
+                        masker?.Add(kvp.Value);
                         context.Secrets[kvp.Key] = kvp.Value; // Overwrite with the new value
 
-                        // TODO: add to secret masker
                         var envName = kvp.Key.ScreamingSnakeCase();
                         context.Env[envName] = kvp.Value;
                     }
                 }
                 else
                 {
+                    masker?.Add(kvp.Value);
                     context.Secrets[kvp.Key] = kvp.Value;
 
-                    // TODO: add to secret masker
                     var envName = kvp.Key.ScreamingSnakeCase();
                     context.Env[envName] = kvp.Value;
                 }

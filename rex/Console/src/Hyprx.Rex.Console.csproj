@@ -32,5 +32,8 @@
      <ProjectReference Include="$(RexDir)/Core/src/*.csproj" />
      <ProjectReference Include="$(RexDir)/Pipelines/src/*.csproj" />
      <ProjectReference Include="$(BclDir)/Lodi/src/*.csproj" />
+     <ProjectReference Include="$(BclDir)/DotEnv/src/*.csproj" />
+     <ProjectReference Include="$(BclDir)/Secrets/src/*.csproj" />
+     <ProjectReference Include="$(BclDir)/Ansi/src/*.csproj" />
   </ItemGroup>
 </Project>

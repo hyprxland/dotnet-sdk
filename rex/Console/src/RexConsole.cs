@@ -1,3 +1,7 @@
+using System.Reflection.Metadata;
+
+using Hyprx.DotEnv.Documents;
+
 using Hyprx.Lodi;
 using Hyprx.Results;
 
@@ -6,6 +10,7 @@ using Hyprx.Rex.Execution;
 using Hyprx.Rex.Jobs;
 using Hyprx.Rex.Messaging;
 using Hyprx.Rex.Tasks;
+using Hyprx.Secrets;
 
 namespace Hyprx;
 
@@ -135,6 +140,7 @@ public static class RexConsole
             sp.RegisterSingleton(_ => new JobPipeline());
             sp.RegisterSingleton(_ => new SequentialJobsPipeline());
             sp.RegisterSingleton(_ => new ExecutionDefaults { Timeout = 60 * 60 * 1000 }); // Default timeout is 1 hour
+            sp.RegisterSingleton(_ => settings.SecretMasker ?? new SecretMasker());
             sp.RegisterSingleton(_ =>
             {
                 var bus = new ConsoleMessageBus();
@@ -159,6 +165,68 @@ public static class RexConsole
         if (defaults is not null)
         {
             defaults.Timeout = options.Timeout > 0 ? options.Timeout : 0;
+        }
+
+        var masker = serviceProvider.GetService(typeof(ISecretMasker)) as ISecretMasker;
+        if (masker is not null)
+        {
+            foreach (var secret in settings.Secrets)
+            {
+                masker.Add(secret.Value);
+            }
+        }
+
+        var env = new StringMap();
+        foreach (var kvp in options.Env)
+        {
+            env[kvp.Key] = kvp.Value;
+            Env.Set(kvp.Key, kvp.Value);
+        }
+
+        var autoload = Path.Join(Environment.CurrentDirectory, ".env");
+        if (File.Exists(autoload) && !options.EnvFiles.Contains(autoload))
+        {
+            options.EnvFiles.Insert(0, autoload);
+        }
+
+        if (options.EnvFiles.Count > 0)
+        {
+            var doc = DotEnv.DotEnvLoader.Parse(new DotEnv.DotEnvLoadOptions()
+            {
+                Files = options.EnvFiles,
+                Expand = true,
+                OverrideEnvironment = true,
+            });
+
+            foreach (var node in doc)
+            {
+                if (node is DotEnvEntry entry)
+                {
+                    env[entry.Name] = entry.Value;
+                    Env.Set(entry.Name, entry.Value);
+                }
+            }
+        }
+
+        if (options.SecretFiles.Count > 0)
+        {
+            var doc = DotEnv.DotEnvLoader.Parse(new DotEnv.DotEnvLoadOptions()
+            {
+                Files = options.SecretFiles,
+                Expand = true,
+                OverrideEnvironment = false,
+            });
+
+            foreach (var node in doc)
+            {
+                if (node is DotEnvEntry entry)
+                {
+                    settings.Secrets[entry.Name] = entry.Value;
+                    masker?.Add(entry.Value);
+                    env[entry.Name] = entry.Value;
+                    Env.Set(entry.Name, entry.Value);
+                }
+            }
         }
 
         var globalTasks = settings.Tasks;

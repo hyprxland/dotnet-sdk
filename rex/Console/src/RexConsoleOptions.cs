@@ -1,5 +1,7 @@
+using Hyprx.Rex.Collections;
 using Hyprx.Rex.Jobs;
 using Hyprx.Rex.Tasks;
+using Hyprx.Secrets;
 
 namespace Hyprx;
 
@@ -25,6 +27,8 @@ public class RexConsoleOptions
 
     public Dictionary<string, string> Env { get; set; } = new();
 
+    public List<string> SecretFiles { get; set; } = new();
+
     public string Context { get; set; } = "default";
 
     public string[] Args { get; set; } = [];
@@ -37,4 +41,8 @@ public class RexConsoleSettings
     public TaskMap Tasks { get; set; } = TaskMap.Global;
 
     public JobMap Jobs { get; set; } = JobMap.Global;
+
+    public StringMap Secrets { get; set; } = new();
+
+    public ISecretMasker? SecretMasker { get; set; }
 }
