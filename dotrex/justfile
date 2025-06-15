@@ -1,0 +1,63 @@
+
+
+bash := if os_family() == 'windows' {
+    'C:\\PROGRA~1\Git\\usr\\bin\\bash.exe'
+} else {
+    '/usr/bin/env bash'
+}
+
+
+setup:
+    #!{{ bash }}
+    dotnet new install xunit.v3.templates
+
+
+tpl cmd='add' :
+    #!{{ bash }}
+    echo "Running {{ cmd }} command"
+    case "{{ cmd }}" in
+
+        install|add|i|a|r)
+            dotnet new install ../tpl/hxlib --force
+            dotnet new install ../tpl/hxtest --force
+            ;;
+      
+        uninstall|remove|r|u)
+            dotnet new uninstall ../tpl/hxlib
+            dotnet new uninstall ../tpl/hxtest
+            ;;
+        *)
+            echo "Invalid command {{ cmd }}"
+            ;;
+    esac
+
+add name:
+    #!{{ bash }}
+    echo "Running add command"
+    name="{{ name }}"
+    if [ -z "$name" ]; then
+        echo "Name is required"
+        exit 1
+    fi
+
+    dotnet new hxlib -n "DotRex.{{ name }}" -o "./{{ name }}/src" \
+        --use-framework-prop "Fx" --changelog --use-license-path --use-icon-path  --cls
+    dotnet new hxtest -n "DotRex.{{ name }}.Tests" -o "./{{ name }}/test" \
+        --use-framework-prop "Fx"
+
+
+    dotnet sln . add "./{{ name }}/src" 
+    dotnet sln . add "./{{ name }}/test"
+
+remove name:
+    #!{{ bash }}
+    echo "Running remove command"
+    name="{{ name }}"
+    if [ -z "$name" ]; then
+        echo "Name is required"
+        exit 1
+    fi
+
+    dotnet sln . remove "./{{ name }}/src" "./{{ name }}/test"
+    rm -rf "./{{ name }}"
+    echo "Removed ./{{ name }}"
