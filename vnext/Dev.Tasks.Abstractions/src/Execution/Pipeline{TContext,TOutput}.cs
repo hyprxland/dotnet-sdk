@@ -27,13 +27,6 @@ public abstract class Pipeline<TContext, TOutput>
         var prevIndex = -1;
 
         var ordered = this.middlewares.ToList();
-        Console.WriteLine($"Pipeline {this.GetType().Name} middlewares:");
-        foreach (var mw in ordered)
-        {
-            Console.WriteLine($" - {mw.GetType().Name}");
-        }
-
-        Console.WriteLine($"Total {ordered.Count} middlewares.");
 
         ordered.Reverse();
 

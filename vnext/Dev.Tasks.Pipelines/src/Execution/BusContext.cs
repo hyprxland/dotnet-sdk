@@ -8,7 +8,10 @@ public class BusContext : RunContext
         : base(context)
     {
         ArgumentNullException.ThrowIfNull(context, nameof(context));
-        this.Bus = context.GetService<IMessageBus>() ?? ConsoleMessageBus.Default;
+        var bus = context.Services.GetService(typeof(IMessageBus)) as IMessageBus;
+        if (bus == null)
+            throw new InvalidOperationException("No message bus registered in the service provider.");
+        this.Bus = bus;
     }
 
     public IMessageBus Bus { get; }

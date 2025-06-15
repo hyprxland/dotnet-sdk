@@ -16,6 +16,8 @@ public class ConsoleRunnerOptions
 
     public string Cmd { get; set; } = "auto";
 
+    public string DeploymentAction { get; set; } = "deploy";
+
     public int Timeout { get; set; } = 0;
 
     public List<string> EnvFiles { get; set; } = new();
@@ -23,6 +25,8 @@ public class ConsoleRunnerOptions
     public Dictionary<string, string> Env { get; set; } = new();
 
     public string Context { get; set; } = "default";
+
+    public string[] Args { get; set; } = [];
 
     public IServiceProvider? Services { get; set; }
 

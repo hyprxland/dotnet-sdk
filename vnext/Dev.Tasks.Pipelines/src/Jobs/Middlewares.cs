@@ -54,12 +54,14 @@ public class ApplyJobContextMiddleware : IPipelineMiddleware<JobPipelineContext>
 
             data.Inputs = job.With.Value;
 
+            data.Tasks = job.Tasks;
+
             await next();
         }
         catch (Exception ex)
         {
             context.Result.Fail(ex);
-            context.Bus.Send(new JobFailed(data, ex));
+            await context.Bus.SendAsync(new JobFailed(data, ex));
         }
     }
 }
@@ -77,23 +79,31 @@ public class RunJobMiddleware : IPipelineMiddleware<JobPipelineContext>
             if (cancellationToken.IsCancellationRequested)
             {
                 context.Result.Cancel();
-                context.Bus.Send(new JobCancelled(data));
+                await context.Bus.SendAsync(new JobCancelled(data));
                 return;
             }
 
             if (context.Status == RunStatus.Failed || (context.Status is RunStatus.Cancelled && !data.Force))
             {
                 context.Result.Skip();
-                context.Bus.Send(new JobSkipped(data));
+                await context.Bus.SendAsync(new JobSkipped(data));
+                return;
+            }
+
+            if (context.JobData.Tasks.Count == 0)
+            {
+                var ex = new InvalidOperationException($"Job '{job.Id}' has no tasks to run.");
+                context.Result.Fail(ex);
+                await context.Bus.SendAsync(new JobFailed(data, ex));
                 return;
             }
 
             if (data.If == false)
-            {
-                context.Result.Skip();
-                context.Bus.Send(new JobSkipped(data));
-                return;
-            }
+                {
+                    context.Result.Skip();
+                    await context.Bus.SendAsync(new JobSkipped(data));
+                    return;
+                }
 
             var timeout = data.Timeout;
             if (timeout < 0)
@@ -118,25 +128,19 @@ public class RunJobMiddleware : IPipelineMiddleware<JobPipelineContext>
             try
             {
                 context.Result.Start();
-                context.Bus.Send(new JobStarted(data));
+                await context.Bus.SendAsync(new JobStarted(data));
 
                 var pipeline = context.GetService<SequentialTasksPipeline>();
                 pipeline ??= new SequentialTasksPipeline();
 
-                var tasks = new TaskMap();
-                foreach (var kvp in data.Tasks)
-                {
-                    tasks[kvp.Key] = kvp.Value;
-                }
-
-                var targets = tasks.Values.Select(t => t.Id).ToList();
-                var ctx = new SequentialTasksPipelineContext(context, targets, tasks);
+                var targets = data.Tasks.Values.Select(t => t.Id).ToList();
+                var ctx = new SequentialTasksPipelineContext(context, targets, data.Tasks);
 
                 var summary = await pipeline.RunAsync(ctx, token);
                 if (summary.Exception is not null)
                 {
                     context.Result.Fail(summary.Exception);
-                    context.Bus.Send(new JobFailed(data, summary.Exception));
+                    await context.Bus.SendAsync(new JobFailed(data, summary.Exception));
                     return;
                 }
 
@@ -151,12 +155,12 @@ public class RunJobMiddleware : IPipelineMiddleware<JobPipelineContext>
                 }
 
                 context.Result.Ok();
-                context.Bus.Send(new JobCompleted(data));
+                await context.Bus.SendAsync(new JobCompleted(data));
             }
             catch (Exception ex)
             {
                 context.Result.Fail(ex);
-                context.Bus.Send(new JobFailed(data, ex));
+                await context.Bus.SendAsync(new JobFailed(data, ex));
                 return;
             }
             finally
@@ -169,7 +173,7 @@ public class RunJobMiddleware : IPipelineMiddleware<JobPipelineContext>
         catch (Exception ex)
         {
             context.Result.Fail(ex);
-            context.Bus.Send(new JobFailed(data, ex));
+            await context.Bus.SendAsync(new JobFailed(data, ex));
         }
     }
 }
@@ -187,7 +191,7 @@ public class RunJobsSequentiallyMiddleware : IPipelineMiddleware<JobsPipelineCon
             context.Status = RunStatus.Failed;
             context.Exception = new InvalidOperationException($"Cyclical job references detected: {string.Join(", ", cycles)}");
 
-            context.Bus.Send(new JobFoundCyclycalReferences(cycles));
+            await context.Bus.SendAsync(new JobFoundCyclycalReferences(cycles));
             return;
         }
 
@@ -197,7 +201,7 @@ public class RunJobsSequentiallyMiddleware : IPipelineMiddleware<JobsPipelineCon
             context.Status = RunStatus.Failed;
             context.Exception = new InvalidOperationException($"Missing job dependencies detected: {string.Join(", ", missingDeps.Select(kvp => $"{kvp.item} -> {string.Join(", ", kvp.missing)}"))}");
 
-            context.Bus.Send(new JobFoundMissingDependencies(missingDeps));
+            await context.Bus.SendAsync(new JobFoundMissingDependencies(missingDeps));
             return;
         }
 
@@ -264,5 +268,4 @@ public class RunJobsSequentiallyMiddleware : IPipelineMiddleware<JobsPipelineCon
 
         await next();
     }
-
 }

@@ -4,7 +4,7 @@ public struct ServiceLifetime
 {
     public ServiceLifetime(string name)
     {
-        this.Name = name;
+        this.Name = name.ToLower();
     }
 
     public ServiceLifetime()
@@ -12,11 +12,11 @@ public struct ServiceLifetime
         this.Name = "Transient";
     }
 
-    public static ServiceLifetime Transient { get; } = new("Transient");
+    public static ServiceLifetime Transient { get; } = new("transient");
 
-    public static ServiceLifetime Scoped { get; } = new("Scoped");
+    public static ServiceLifetime Scoped { get; } = new("scoped");
 
-    public static ServiceLifetime Singleton { get; } = new("Singleton");
+    public static ServiceLifetime Singleton { get; } = new("singleton");
 
     public string Name { get; init; } = null!;
 

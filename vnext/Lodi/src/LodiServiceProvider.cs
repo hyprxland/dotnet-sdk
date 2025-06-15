@@ -172,6 +172,20 @@ public class LodiServiceProvider : IServiceProvider, IDisposable
         return this;
     }
 
+    public LodiServiceProvider RegisterSingleton<T, TInstance>(Func<LodiServiceProvider, T> factory)
+        where TInstance : T
+    {
+        var dependency = new LodiDependency(typeof(T), ServiceLifetime.Singleton, sp =>
+        {
+            var instance = factory(sp);
+            if (instance is null)
+                throw new InvalidOperationException($"Factory for type {typeof(T).FullName} returned null.");
+            return instance;
+        });
+        this.Register(dependency);
+        return this;
+    }
+
     public LodiServiceProvider RegisterSingleton<T>(string key, Func<LodiServiceProvider, T> factory)
     {
         var dependency = new LodiDependency(typeof(T), key, ServiceLifetime.Singleton, sp =>
@@ -199,16 +213,16 @@ public class LodiServiceProvider : IServiceProvider, IDisposable
         return this;
     }
 
-    public LodiServiceProvider RegisterSingleton<T>(object instance)
+    public LodiServiceProvider RegisterSingletonInstance<T>(T instance)
     {
-        var dependency = new LodiDependency(typeof(T), ServiceLifetime.Singleton, instance);
+        var dependency = new LodiDependency(typeof(T), ServiceLifetime.Singleton, instance!);
         this.Register(dependency);
         return this;
     }
 
-    public LodiServiceProvider RegisterSingleton<T>(string key, object instance)
+    public LodiServiceProvider RegisterSingletonInstance<T>(string key, T instance)
     {
-        var dependency = new LodiDependency(typeof(T), key, ServiceLifetime.Singleton, instance);
+        var dependency = new LodiDependency(typeof(T), key, ServiceLifetime.Singleton, instance!);
         this.Register(dependency);
         return this;
     }
@@ -225,7 +239,18 @@ public class LodiServiceProvider : IServiceProvider, IDisposable
             if (ServiceLifetime.IsSingleton(dependency.Lifetime))
             {
                 if (dependency.Service is null)
-                    dependency.Service = dependency.Factory(this);
+                {
+                    var instance = dependency.Factory(this);
+                    dependency.Service = instance;
+
+                    if (instance is null)
+                    {
+                        throw new InvalidOperationException($"Factory for type {dependency.ServiceType.FullName} returned null.");
+                    }
+                }
+                else
+                {
+                }
 
                 return dependency.Service;
             }

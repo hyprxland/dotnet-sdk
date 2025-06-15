@@ -109,7 +109,7 @@ public class ApplyTaskContextMiddleware : IPipelineMiddleware<TaskPipelineContex
         catch (Exception ex)
         {
             context.Result.Fail(ex);
-            context.Bus.Send(new TaskFailed(data, ex));
+            await context.Bus.SendAsync(new TaskFailed(data, ex));
         }
     }
 }
@@ -128,21 +128,21 @@ public class ExecuteTaskMiddleware : IPipelineMiddleware<TaskPipelineContext>
             if (cancellationToken.IsCancellationRequested)
             {
                 context.Result.Cancel();
-                context.Bus.Send(new TaskCancelled(data));
+                await context.Bus.SendAsync(new TaskCancelled(data));
                 return;
             }
 
             if ((context.Status is RunStatus.Failed or RunStatus.Cancelled) && !data.Force)
             {
                 context.Result.Skip();
-                context.Bus.Send(new TaskSkipped(data));
+                await context.Bus.SendAsync(new TaskSkipped(data));
                 return;
             }
 
             if (!data.If)
             {
                 context.Result.Skip();
-                context.Bus.Send(new TaskSkipped(data));
+                await context.Bus.SendAsync(new TaskSkipped(data));
                 return;
             }
 
@@ -155,11 +155,11 @@ public class ExecuteTaskMiddleware : IPipelineMiddleware<TaskPipelineContext>
             if (cts.IsCancellationRequested)
             {
                 context.Result.Cancel();
-                context.Bus.Send(new TaskCancelled(data));
+                await context.Bus.SendAsync(new TaskCancelled(data));
                 return;
             }
 
-            context.Bus.Send(new TaskStarted(data));
+            await context.Bus.SendAsync(new TaskStarted(data));
 
             try
             {
@@ -186,12 +186,12 @@ public class ExecuteTaskMiddleware : IPipelineMiddleware<TaskPipelineContext>
                 if (result.IsOk)
                 {
                     context.Result.Ok(result.Value);
-                    context.Bus.Send(new TaskCompleted(data));
+                    await context.Bus.SendAsync(new TaskCompleted(data));
                 }
                 else
                 {
                     context.Result.Fail(result.Error);
-                    context.Bus.Send(new TaskFailed(data, result.Error));
+                    await context.Bus.SendAsync(new TaskFailed(data, result.Error));
                 }
             }
             catch (Exception ex)
@@ -200,13 +200,13 @@ public class ExecuteTaskMiddleware : IPipelineMiddleware<TaskPipelineContext>
 
                 // Handle any exceptions that occur during task execution
                 context.Result.Fail(ex);
-                context.Bus.Send(new TaskFailed(data, ex));
+                await context.Bus.SendAsync(new TaskFailed(data, ex));
             }
         }
         catch (Exception ex)
         {
             context.Result.Fail(ex);
-            context.Bus.Send(new TaskFailed(data, ex));
+            await context.Bus.SendAsync(new TaskFailed(data, ex));
         }
         finally
         {

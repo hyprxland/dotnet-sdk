@@ -79,11 +79,41 @@ public static partial class Shell
     public static Command Command(CommandOptions options)
         => new Command(options);
 
+    public static Output Output(CommandArgs args)
+    {
+        ArgumentOutOfRangeException.ThrowIfNullOrEmpty(args);
+
+        var exe = args[0];
+        args.RemoveAt(0);
+        return new Command(exe).WithArgs(args).Output();
+    }
+
+    public static ValueTask<Output> OutputAsync(CommandArgs args, CancellationToken cancellationToken = default)
+    {
+        ArgumentOutOfRangeException.ThrowIfNullOrEmpty(args);
+
+        var exe = args[0];
+        args.RemoveAt(0);
+        return new Command(exe).WithArgs(args).OutputAsync(cancellationToken);
+    }
+
     public static Output Run(CommandArgs args)
-        => new Command().Run(args);
+    {
+        ArgumentOutOfRangeException.ThrowIfNullOrEmpty(args);
+
+        var exe = args[0];
+        args.RemoveAt(0);
+        return new Command(exe).Run(args);
+    }
 
     public static ValueTask<Output> RunAsync(CommandArgs args, CancellationToken cancellationToken = default)
-        => new Command().RunAsync(args, cancellationToken);
+    {
+        ArgumentOutOfRangeException.ThrowIfNullOrEmpty(args);
+
+        var exe = args[0];
+        args.RemoveAt(0);
+        return new Command(exe).RunAsync(args, cancellationToken);
+    }
 
     public static BashCommand Bash()
         => new BashCommand();

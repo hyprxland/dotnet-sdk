@@ -1,6 +1,6 @@
 namespace Hyprx.Dev.Messaging;
 
-public interface IMessageSubscriber
+public interface IMessageSink
 {
     Task<bool> ReceiveAsync(IMessage message);
 }

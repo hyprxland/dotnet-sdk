@@ -13,115 +13,128 @@ public static class ConsoleRunner
 
     public static JobMap Jobs { get; } = JobMap.Global;
 
-    public static CodeTask Task(CodeTask task)
+    public static JobBuilder Job(CodeJob job, Action<JobBuilder>? configure = null)
+    {
+        Jobs[job.Id] = job;
+        var builder = new JobBuilder(job, Tasks);
+        configure?.Invoke(builder);
+        return builder;
+    }
+
+    public static JobBuilder Job(string id, Action<JobBuilder>? configure = null)
+    {
+        var job = new CodeJob(id);
+        Jobs[id] = job;
+        var builder = new JobBuilder(job, Tasks);
+        configure?.Invoke(builder);
+        return builder;
+    }
+
+    public static TaskBuilder Task(CodeTask task)
     {
         Tasks[task.Id] = task;
-        return task;
+        return new TaskBuilder(task);
     }
 
-    public static CodeTask Task(string id, RunTaskAsync run)
+    public static TaskBuilder Task(string id, RunTaskAsync run, Action<TaskBuilder>? configure = null)
     {
         var task = new DelegateTask(id, run);
         Tasks[id] = task;
-        return task;
+        var builder = new TaskBuilder(task);
+        configure?.Invoke(builder);
+        return builder;
     }
 
-    public static CodeTask Task(string id, string[] needs, RunTaskAsync run)
-    {
-        var task = new DelegateTask(id, run);
-        task.Needs = needs;
-        Tasks[id] = task;
-        return task;
-    }
-
-    public static CodeTask Task(string id, Func<TaskContext, Task<Result<Outputs>>> run)
-    {
-        var task = new DelegateTask(id, run);
-        Tasks[id] = task;
-        return task;
-    }
-
-    public static CodeTask Task(string id, string[] needs, Func<TaskContext, Task<Result<Outputs>>> run)
+    public static TaskBuilder Task(string id, string[] needs, RunTaskAsync run, Action<TaskBuilder>? configure = null)
     {
         var task = new DelegateTask(id, run);
         task.Needs = needs;
         Tasks[id] = task;
-        return task;
+        var builder = new TaskBuilder(task);
+        configure?.Invoke(builder);
+        return builder;
     }
 
-    public static CodeTask Task(string id, Func<TaskContext, CancellationToken, Outputs> run)
+    public static TaskBuilder Task(string id, Func<TaskContext, Task<Result<Outputs>>> run, Action<TaskBuilder>? configure = null)
     {
         var task = new DelegateTask(id, run);
         Tasks[id] = task;
-        return task;
+        var builder = new TaskBuilder(task);
+        configure?.Invoke(builder);
+        return builder;
     }
 
-    public static CodeTask Task(string id, string[] needs, Func<TaskContext, CancellationToken, Outputs> run)
-    {
-        var task = new DelegateTask(id, run);
-        task.Needs = needs;
-        Tasks[id] = task;
-        return task;
-    }
 
-    public static CodeTask Task(string id, string[] needs, Func<TaskContext, CancellationToken, Task<Outputs>> run)
-    {
-        var task = new DelegateTask(id, run);
-        task.Needs = needs;
-        Tasks[id] = task;
-        return task;
-    }
-
-    public static CodeTask Task(string id, Func<TaskContext, CancellationToken, Task<Outputs>> run)
+    public static TaskBuilder Task(string id, Func<TaskContext, CancellationToken, Outputs> run, Action<TaskBuilder>? configure = null)
     {
         var task = new DelegateTask(id, run);
         Tasks[id] = task;
-        return task;
+        var builder = new TaskBuilder(task);
+        configure?.Invoke(builder);
+        return builder;
     }
 
-    public static CodeTask Task(string id, Action<TaskContext> run)
-    {
-        var task = new DelegateTask(id, run);
-        Tasks[id] = task;
-        return task;
-    }
-
-    public static CodeTask Task(string id, string[] needs, Action<TaskContext> run)
+    public static TaskBuilder Task(string id, string[] needs, Func<TaskContext, CancellationToken, Task<Outputs>> run, Action<TaskBuilder>? configure = null)
     {
         var task = new DelegateTask(id, run);
         task.Needs = needs;
         Tasks[id] = task;
-        return task;
+        var builder = new TaskBuilder(task);
+        configure?.Invoke(builder);
+        return builder;
     }
 
-    public static CodeTask Task(string id, Action run)
+    public static TaskBuilder Task(string id,  Action<TaskContext> run, Action<TaskBuilder>? configure = null)
     {
         var task = new DelegateTask(id, run);
         Tasks[id] = task;
-        return task;
+        var builder = new TaskBuilder(task);
+        configure?.Invoke(builder);
+        return builder;
     }
 
-    public static CodeTask Task(string id, string[] needs, Action run)
+    public static TaskBuilder Task(string id, Action run, Action<TaskBuilder>? configure = null)
     {
         var task = new DelegateTask(id, run);
-        task.Needs = needs;
         Tasks[id] = task;
-        return task;
+        var builder = new TaskBuilder(task);
+        configure?.Invoke(builder);
+        return builder;
     }
 
-    public static async Task<int> RunAsync(ConsoleRunnerOptions options, CancellationToken cancellationToken = default)
+    public static Task<int> RunTasksAsync(string[] args, CancellationToken cancellationToken = default)
+    {
+        var options = new ConsoleRunnerOptions
+        {
+            Tasks = Tasks,
+            Jobs = Jobs,
+        };
+
+        return RunTasksAsync(args, options, cancellationToken);
+    }
+
+    public static async Task<int> RunTasksAsync(string[] args, ConsoleRunnerOptions options, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(options, nameof(options));
+
+        ParseArgs(args, options);
 
         if (options.Services is null)
         {
             var sp = new LodiServiceProvider();
-            sp.RegisterSingleton<TaskPipeline>(() => new TaskPipeline());
-            sp.RegisterSingleton<SequentialTasksPipeline>(() => new SequentialTasksPipeline());
-            sp.RegisterSingleton<JobPipeline>(() => new JobPipeline());
-            sp.RegisterSingleton<SequentialJobsPipeline>(() => new SequentialJobsPipeline());
-            sp.RegisterSingleton<ExecutionDefaults>(() => new ExecutionDefaults { Timeout = 60 * 60 * 1000 }); // Default timeout is 1 hour
-            sp.RegisterSingleton<IMessageBus>(() => new ConsoleMessageBus());
+            sp.RegisterSingleton(_ => new TaskPipeline());
+            sp.RegisterSingleton(_ => new SequentialTasksPipeline());
+            sp.RegisterSingleton(_ => new JobPipeline());
+            sp.RegisterSingleton(_ => new SequentialJobsPipeline());
+            sp.RegisterSingleton(_ => new ExecutionDefaults { Timeout = 60 * 60 * 1000 }); // Default timeout is 1 hour
+            sp.RegisterSingleton(_ =>
+            {
+                var bus = new ConsoleMessageBus();
+
+                bus.Subscribe(new ConsoleSink(), "*");
+
+                return (IMessageBus)bus;
+            });
 
             options.Services = sp;
         }
@@ -239,5 +252,183 @@ public static class ConsoleRunner
         }
 
         return 1;
+    }
+
+    private static void ParseArgs(string[] args, ConsoleRunnerOptions options)
+    {
+        bool isTarget = false;
+        var targets = new List<string>();
+        var additionalArgs = new List<string>();
+
+        for (var i = 0; i < args.Length; i++)
+        {
+            var current = args[i];
+            if (current.Length == 0)
+            {
+                continue;
+            }
+
+            if (current[0] is '-' && !isTarget)
+            {
+                switch (current)
+                {
+                    case "--task":
+                    case "--tasks":
+                        options.Cmd = "task";
+                        break;
+
+                    case "--job":
+                    case "--jobs":
+                        options.Cmd = "job";
+                        break;
+
+                    case "--deploy":
+                        options.Cmd = "deploy";
+                        options.DeploymentAction = "deploy";
+                        break;
+
+                    case "--destroy":
+                        options.Cmd = "deploy";
+                        options.DeploymentAction = "destroy";
+                        break;
+
+                    case "--rollback":
+                        options.Cmd = "deploy";
+                        options.DeploymentAction = "rollback";
+                        break;
+
+                    case "--list":
+                    case "-l":
+                        options.Cmd = "list";
+                        break;
+
+                    case "--dry-run":
+                    case "--what-if":
+                    case "-w":
+                        options.DryRun = true;
+                        break;
+
+                    case "--verbose":
+                    case "-v":
+                        options.Verbose = true;
+                        break;
+
+                    case "--debug":
+                    case "-d":
+                        options.Debug = true;
+                        break;
+
+                    case "--timeout":
+                    case "-t":
+                        if (i + 1 < args.Length && int.TryParse(args[i + 1], out var timeout))
+                        {
+                            options.Timeout = timeout;
+                            i++;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Timeout value is missing or invalid.");
+                        }
+
+                        break;
+                    case "--env-file":
+                        {
+                            var j = i + 1;
+                            var next = j < args.Length ? args[j] : null;
+                            if (next is null)
+                            {
+                                Console.WriteLine("--env-file is missing path.");
+                            }
+                            else if (next[0] is '-' or '/')
+                            {
+                                Console.WriteLine("--env-file is missing path.");
+                            }
+                            else
+                            {
+                                options.EnvFiles.Add(next);
+                                i++;
+                            }
+                        }
+
+                        break;
+
+                    case "--env":
+                    case "-e":
+                        {
+                            var j = i + 1;
+                            var next = j < args.Length ? args[j] : null;
+                            if (next is null)
+                            {
+                                Console.WriteLine("--env is missing key=value.");
+                            }
+                            else if (next[0] is '-' or '/')
+                            {
+                                Console.WriteLine("--env is missing key=value.");
+                            }
+                            else
+                            {
+                                var eq = next.IndexOf('=');
+                                if (eq > 0)
+                                {
+                                    var key = next.Substring(0, eq);
+                                    var value = next.Substring(eq + 1);
+                                    if (value[0] is '"' or '\'')
+                                    {
+                                        value = value[1..];
+                                    }
+
+                                    if (value.Length > 0 && value[^1] is '"' or '\'')
+                                    {
+                                        value = value[..^1];
+                                    }
+
+                                    options.Env[key] = value;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("--env is missing '='. e.g. -e key=value.");
+                                }
+
+                                i++;
+                            }
+                        }
+
+                        break;
+
+                    case "--":
+                        isTarget = true;
+                        break;
+
+                    default:
+                        Console.WriteLine($"Unknown option '{current}'.");
+                        break;
+                }
+            }
+            else if (isTarget && current[0] is '-' or '/')
+            {
+                isTarget = true;
+                var j = i;
+                for (; j < args.Length; j++)
+                {
+                    if (args[j] == "--")
+                    {
+                        j++;
+                        continue;
+                    }
+
+                    additionalArgs.Add(args[j]);
+                }
+
+                break;
+            }
+            else
+            {
+                isTarget = true;
+                targets.Add(current);
+            }
+        }
+
+        options.Targets = targets.Count == 0 ? new[] { "default" } : targets.ToArray();
+        options.Args = additionalArgs.ToArray();
     }
 }

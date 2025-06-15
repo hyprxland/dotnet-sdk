@@ -127,3 +127,92 @@ public class DelegateTask : CodeTask, ITaskHandler
         }
     }
 }
+
+public class TaskBuilder
+{
+    private readonly CodeTask task;
+
+    public TaskBuilder(CodeTask task)
+    {
+        this.task = task;
+    }
+
+    public TaskBuilder WithEnv(IEnumerable<KeyValuePair<string, string>> env)
+    {
+        var map = new StringMap(new Dictionary<string, string>(env, StringComparer.OrdinalIgnoreCase));
+        this.task.Env = map;
+        return this;
+    }
+
+    public TaskBuilder WithEnv(DeferredTaskValue<StringMap> env)
+    {
+        this.task.Env = env;
+        return this;
+    }
+
+    public TaskBuilder WithName(string name)
+    {
+        this.task.Name = name;
+        return this;
+    }
+
+    public TaskBuilder WithDescription(string description)
+    {
+        this.task.Description = description;
+        return this;
+    }
+
+    public TaskBuilder Set(Action<CodeTask> action)
+    {
+        action(this.task);
+        return this;
+    }
+
+    public TaskBuilder WithIf(DeferredTaskValue<bool> condition)
+    {
+        this.task.If = condition;
+        return this;
+    }
+
+    public TaskBuilder WithIf(bool condition)
+    {
+        this.task.If = condition;
+        return this;
+    }
+
+    public TaskBuilder WithTimeout(DeferredTaskValue<int> timeout)
+    {
+        this.task.Timeout = timeout;
+        return this;
+    }
+
+    public TaskBuilder WithTimeout(int timeout)
+    {
+        this.task.Timeout = timeout;
+        return this;
+    }
+
+    public TaskBuilder WithCwd(DeferredTaskValue<string> cwd)
+    {
+        this.task.Cwd = cwd;
+        return this;
+    }
+
+    public TaskBuilder WithCwd(string cwd)
+    {
+        this.task.Cwd = cwd;
+        return this;
+    }
+
+    public TaskBuilder WithForce(DeferredTaskValue<bool> force)
+    {
+        this.task.Force = force;
+        return this;
+    }
+
+    public TaskBuilder WithForce(bool force)
+    {
+        this.task.Force = force;
+        return this;
+    }
+}

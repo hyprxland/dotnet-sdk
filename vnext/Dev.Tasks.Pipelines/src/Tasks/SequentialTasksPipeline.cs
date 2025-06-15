@@ -65,11 +65,6 @@ public class ExecuteTasksSequentialMiddleware : IPipelineMiddleware<SequentialTa
     {
         var targets = context.Targets;
         var tasks = context.Tasks;
-        foreach (var kvp in tasks)
-        {
-            Console.WriteLine($"Task: {kvp.Key} -> Needs: [{string.Join(", ", kvp.Value.Needs)}]");
-        }
-
         var cyclesResult = tasks.DetectCyclycalReferences();
         var bus = context.Bus;
         if (bus is null)
@@ -83,7 +78,7 @@ public class ExecuteTasksSequentialMiddleware : IPipelineMiddleware<SequentialTa
         {
                 context.Exception = new InvalidOperationException($"Cyclical dependencies detected: {string.Join(", ", cyclesResult)}");
                 context.Status = RunStatus.Failed;
-                bus.Send(new TasksFoundCyclycalReferences(cyclesResult));
+                await context.Bus.SendAsync(new TasksFoundCyclycalReferences(cyclesResult));
         }
 
         var missingDeps = tasks.DetectMissingDependencies();
@@ -91,7 +86,7 @@ public class ExecuteTasksSequentialMiddleware : IPipelineMiddleware<SequentialTa
         {
             context.Exception = new InvalidOperationException($"Missing dependencies detected: {string.Join(", ", missingDeps)}");
             context.Status = RunStatus.Failed;
-            bus.Send(new TasksFoundMissingDependencies(missingDeps));
+            await context.Bus.SendAsync(new TasksFoundMissingDependencies(missingDeps));
         }
 
         var targetTasks = new List<CodeTask>();
