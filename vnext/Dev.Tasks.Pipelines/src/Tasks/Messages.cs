@@ -63,9 +63,9 @@ public class TaskCompleted : TaskMessaseBase
     }
 }
 
-public class FoundCyclycalReferences : IMessage
+public class TasksFoundCyclycalReferences : IMessage
 {
-    public FoundCyclycalReferences(List<CodeTask> tasks)
+    public TasksFoundCyclycalReferences(List<CodeTask> tasks)
     {
         ArgumentNullException.ThrowIfNull(tasks, nameof(tasks));
         this.Tasks.AddRange(tasks);
@@ -76,9 +76,9 @@ public class FoundCyclycalReferences : IMessage
     public List<CodeTask> Tasks { get; } = new();
 }
 
-public class FoundMissingDependencies : IMessage
+public class TasksFoundMissingDependencies : IMessage
 {
-    public FoundMissingDependencies(List<(CodeTask, List<string>)> tasks)
+    public TasksFoundMissingDependencies(List<(CodeTask, List<string>)> tasks)
     {
         ArgumentNullException.ThrowIfNull(tasks, nameof(tasks));
         this.Tasks.AddRange(tasks);

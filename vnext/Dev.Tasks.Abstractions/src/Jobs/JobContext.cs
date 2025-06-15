@@ -2,14 +2,14 @@ using Hyprx.Dev.Execution;
 
 namespace Hyprx.Dev.Jobs;
 
-public class JobContext : RunContext
+public class JobContext : Execution.RunContext
 {
-    public JobContext(RunContext context, JobData jobData)
+    public JobContext(Execution.RunContext context, CodeJobData jobData)
         : base(context)
     {
         ArgumentNullException.ThrowIfNull(jobData, nameof(jobData));
         this.JobData = jobData;
     }
 
-    public JobData JobData { get; }
+    public CodeJobData JobData { get; }
 }

@@ -78,7 +78,7 @@ public class ExecuteTasksSequentialMiddleware : IPipelineMiddleware<SequentialTa
         {
                 context.Exception = new InvalidOperationException($"Cyclical dependencies detected: {string.Join(", ", cyclesResult)}");
                 context.Status = RunStatus.Failed;
-                bus.Send(new FoundCyclycalReferences(cyclesResult));
+                bus.Send(new TasksFoundCyclycalReferences(cyclesResult));
         }
 
         var missingDeps = tasks.DetectMissingDependencies();
@@ -86,7 +86,7 @@ public class ExecuteTasksSequentialMiddleware : IPipelineMiddleware<SequentialTa
         {
             context.Exception = new InvalidOperationException($"Missing dependencies detected: {string.Join(", ", missingDeps)}");
             context.Status = RunStatus.Failed;
-            bus.Send(new FoundMissingDependencies(missingDeps));
+            bus.Send(new TasksFoundMissingDependencies(missingDeps));
         }
 
         var targetTasks = new List<CodeTask>();

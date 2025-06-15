@@ -26,7 +26,11 @@ public class CodeJob : INeedful
 
     public DeferredJobValue<Inputs> With { get; set; } = new Inputs();
 
+    public DeferredJobValue<bool> Force { get; set; } = false;
+
     public TaskMap Tasks { get; set; } = new();
+
+    public DeferredJobValue<string> Cwd { get; set; } = string.Empty;
 
     public string[] Needs { get; set; } = [];
 }
