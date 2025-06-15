@@ -42,7 +42,7 @@ add name:
 
     dotnet new hxlib -n "Hyprx.{{ name }}" -o "./{{ name }}/src" \
         --use-framework-prop "Fx" --changelog --use-license-path --use-icon-path  --unsafe --cls
-    dotnet new Hyprx.Devest -n "Hyprx.{{ name }}.Tests" -o "./{{ name }}/test" \
+    dotnet new hxtest -n "Hyprx.{{ name }}.Tests" -o "./{{ name }}/test" \
         --use-framework-prop "Fx"
 
 

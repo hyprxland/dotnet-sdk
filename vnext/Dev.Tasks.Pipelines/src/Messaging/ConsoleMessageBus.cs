@@ -5,6 +5,8 @@ namespace Hyprx.Dev.Messaging;
 
 public sealed class ConsoleMessageBus : IMessageBus
 {
+    private static readonly Lazy<ConsoleMessageBus> instance = new Lazy<ConsoleMessageBus>(() => new ConsoleMessageBus());
+
     private readonly Thread thread;
 
     private readonly AutoResetEvent runner = new AutoResetEvent(false);
@@ -24,6 +26,8 @@ public sealed class ConsoleMessageBus : IMessageBus
         this.thread = new Thread(this.PumpMessages);
         this.thread.Start();
     }
+
+    public static ConsoleMessageBus Default => instance.Value;
 
     public bool IsListening => !this.shuttingDown && !this.disposed;
 

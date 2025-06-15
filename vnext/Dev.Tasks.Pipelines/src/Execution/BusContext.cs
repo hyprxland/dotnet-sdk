@@ -8,7 +8,7 @@ public class BusContext : RunContext
         : base(context)
     {
         ArgumentNullException.ThrowIfNull(context, nameof(context));
-        this.Bus = context.GetRequiredService<IMessageBus>();
+        this.Bus = context.GetService<IMessageBus>() ?? ConsoleMessageBus.Default;
     }
 
     public IMessageBus Bus { get; }

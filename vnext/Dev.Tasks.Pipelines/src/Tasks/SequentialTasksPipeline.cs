@@ -40,7 +40,7 @@ public class SequentialTasksPipeline : Pipeline<SequentialTasksPipelineContext, 
 
 public class SequentialTasksPipelineContext : BusContext
 {
-    public SequentialTasksPipelineContext(BusContext context, IEnumerable<string> targets, TaskMap? map = null)
+    public SequentialTasksPipelineContext(RunContext context, IEnumerable<string> targets, TaskMap? map = null)
         : base(context)
     {
         ArgumentNullException.ThrowIfNull(targets, nameof(targets));

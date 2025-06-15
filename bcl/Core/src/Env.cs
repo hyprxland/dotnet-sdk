@@ -564,7 +564,7 @@ public static class Env
         if (path.IsNullOrWhiteSpace())
             return new ArgumentNullException(nameof(path), "Path cannot be null or empty.");
 
-        var pathsResult = TrySplitEnvPath(target);
+        var pathsResult = TrySplitPath(target);
         if (!pathsResult.IsOk)
             return pathsResult.Error;
 
@@ -580,11 +580,11 @@ public static class Env
 
         Array.Resize(ref paths, paths.Length + 1);
         paths[^1] = path;
-        var newPath = TryJoinEnvPath(paths);
+        var newPath = TryJoinPath(paths);
         if (!newPath.IsOk)
             return newPath.Error;
 
-        return TrySetEnv(OperatingSystem.IsWindows() ? "Path" : "PATH", newPath.Value, target);
+        return TrySet(OperatingSystem.IsWindows() ? "Path" : "PATH", newPath.Value, target);
     }
 
     /// <summary>
@@ -883,7 +883,7 @@ public static class Env
     /// <returns>
     /// A <see cref="ValueResult{T}"/> representing the outcome of the operation.
     /// </returns>
-    public static ValueResult<bool> TryHasEnv(string variable, EnvironmentVariableTarget target = EnvironmentVariableTarget.Process)
+    public static ValueResult<bool> TryHas(string variable, EnvironmentVariableTarget target = EnvironmentVariableTarget.Process)
     {
         if (string.IsNullOrEmpty(variable))
             return new ValueResult<bool>(new EnvironmentException("Environment variable key cannot be null or empty."));
@@ -908,7 +908,7 @@ public static class Env
     /// <returns>
     /// A <see cref="ValueResult{T}"/> representing the outcome of the operation.
     /// </returns>
-    public static ValueResult<string> TryJoinEnvPath(params string[] paths)
+    public static ValueResult<string> TryJoinPath(params string[] paths)
     {
         if (paths is null || paths.Length == 0)
             return string.Empty;
@@ -936,11 +936,11 @@ public static class Env
     /// <returns>
     /// A <see cref="ValueResult"/> representing the outcome of the operation.
     /// </returns>
-    public static ValueResult TryPrependEnvPath(string path, EnvironmentVariableTarget target = EnvironmentVariableTarget.Process)
+    public static ValueResult TryPrependPath(string path, EnvironmentVariableTarget target = EnvironmentVariableTarget.Process)
     {
         if (path.IsNullOrWhiteSpace())
             return new ArgumentNullException(nameof(path), "Path cannot be null or empty.");
-        var pathsResult = TrySplitEnvPath(target);
+        var pathsResult = TrySplitPath(target);
         if (!pathsResult.IsOk)
             return pathsResult.Error;
 
@@ -957,11 +957,11 @@ public static class Env
         var copy = new string[paths.Length + 1];
         Array.Copy(paths, 0, copy, 1, paths.Length);
         copy[0] = path;
-        var newPathResult = TryJoinEnvPath(copy);
+        var newPathResult = TryJoinPath(copy);
         if (!newPathResult.IsOk)
             return newPathResult.Error;
 
-        return TrySetEnvPath(newPathResult.Value, target);
+        return TrySetEnv(newPathResult.Value, target);
     }
 
     /// <summary>
@@ -979,7 +979,7 @@ public static class Env
     /// <returns>
     /// A <see cref="ValueResult"/> representing the outcome of the operation.
     /// </returns>
-    public static ValueResult TrySetEnv(string variable, string value, EnvironmentVariableTarget target = EnvironmentVariableTarget.Process)
+    public static ValueResult TrySet(string variable, string value, EnvironmentVariableTarget target = EnvironmentVariableTarget.Process)
     {
         if (string.IsNullOrEmpty(variable))
             return new ArgumentNullException(nameof(variable), "Environment variable key cannot be null or empty.");
@@ -1010,7 +1010,7 @@ public static class Env
     /// <returns>
     /// A <see cref="ValueResult"/> representing the outcome of the operation.
     /// </returns>
-    public static ValueResult TrySetEnvPath(string path, EnvironmentVariableTarget target = EnvironmentVariableTarget.Process)
+    public static ValueResult TrySetEnv(string path, EnvironmentVariableTarget target = EnvironmentVariableTarget.Process)
     {
         if (string.IsNullOrWhiteSpace(path))
             return new ArgumentNullException(nameof(path), "Environment variable path cannot be null or empty.");
@@ -1035,7 +1035,7 @@ public static class Env
     /// <returns>
     /// An array of strings representing the individual paths in the environment variable PATH.
     /// </returns>
-    public static ValueResult<string[]> TrySplitEnvPath(string path)
+    public static ValueResult<string[]> TrySplitPath(string path)
     {
         if (string.IsNullOrWhiteSpace(path))
             return OkRef(Array.Empty<string>());
@@ -1053,13 +1053,13 @@ public static class Env
     /// <returns>
     /// An array of strings representing the individual paths in the environment variable PATH.
     /// </returns>
-    public static ValueResult<string[]> TrySplitEnvPath(EnvironmentVariableTarget target = EnvironmentVariableTarget.Process)
+    public static ValueResult<string[]> TrySplitPath(EnvironmentVariableTarget target = EnvironmentVariableTarget.Process)
     {
         var result = TryGet(OperatingSystem.IsWindows() ? "Path" : "PATH", target);
         if (result.IsError)
             return result.Error;
 
-        return TrySplitEnvPath(result.Value);
+        return TrySplitPath(result.Value);
     }
 
     /// <summary>
@@ -1097,7 +1097,7 @@ public static class Env
     /// The name of the environment variable to unset.
     /// </param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void UnsetEnv(string variable)
+    public static void Unset(string variable)
         => Environment.SetEnvironmentVariable(variable, null);
 
     /// <summary>
@@ -1109,7 +1109,7 @@ public static class Env
     /// <param name="target">
     /// The target for the environment variable (e.g., process, user, machine).
     /// </param>
-    public static void UnsetEnv(string variable, EnvironmentVariableTarget target)
+    public static void Unset(string variable, EnvironmentVariableTarget target)
         => Environment.SetEnvironmentVariable(variable, null, target);
 
     private static bool IsValidBashVariable(ReadOnlySpan<char> input)
