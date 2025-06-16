@@ -6,6 +6,7 @@ using Hyprx.Lodi;
 using Hyprx.Results;
 
 using Hyprx.Rex.Collections;
+using Hyprx.Rex.Deployments;
 using Hyprx.Rex.Execution;
 using Hyprx.Rex.Jobs;
 using Hyprx.Rex.Messaging;
@@ -19,6 +20,70 @@ public static class RexConsole
     public static TaskMap Tasks { get; } = TaskMap.Global;
 
     public static JobMap Jobs { get; } = JobMap.Global;
+
+    public static DeploymentMap Deployments { get; } = DeploymentMap.Default;
+
+    public static DeploymentBuilder Deployment(CodeDeployment deployment, Action<DeploymentBuilder>? configure = null)
+    {
+        Deployments[deployment.Id] = deployment;
+        var builder = new DeploymentBuilder(deployment, Tasks);
+        configure?.Invoke(builder);
+        return builder;
+    }
+
+    public static DeploymentBuilder Deployment(string id, Func<DeploymentContext, CancellationToken, Task<Result<Outputs>>> deployAsync, Action<DeploymentBuilder>? configure = null)
+    {
+        var deployment = new DelegateDeployment(id, deployAsync);
+        Deployments[id] = deployment;
+        var builder = new DeploymentBuilder(deployment, Tasks);
+        configure?.Invoke(builder);
+        return builder;
+    }
+
+    public static DeploymentBuilder Deployment(string id, Func<DeploymentContext, Task<Result<Outputs>>> run, Action<DeploymentBuilder>? configure = null)
+    {
+        var deployment = new DelegateDeployment(id, run);
+        Deployments[id] = deployment;
+        var builder = new DeploymentBuilder(deployment, Tasks);
+        configure?.Invoke(builder);
+        return builder;
+    }
+
+    public static DeploymentBuilder Deployment(string id, Func<DeploymentContext, CancellationToken, Outputs> run, Action<DeploymentBuilder>? configure = null)
+    {
+        var deployment = new DelegateDeployment(id, run);
+        Deployments[id] = deployment;
+        var builder = new DeploymentBuilder(deployment, Tasks);
+        configure?.Invoke(builder);
+        return builder;
+    }
+
+    public static DeploymentBuilder Deployment(string id, Func<DeploymentContext, CancellationToken, Task<Outputs>> run, Action<DeploymentBuilder>? configure = null)
+    {
+        var deployment = new DelegateDeployment(id, run);
+        Deployments[id] = deployment;
+        var builder = new DeploymentBuilder(deployment, Tasks);
+        configure?.Invoke(builder);
+        return builder;
+    }
+
+    public static DeploymentBuilder Deployment(string id, Action<DeploymentContext> run, Action<DeploymentBuilder>? configure = null)
+    {
+        var deployment = new DelegateDeployment(id, run);
+        Deployments[id] = deployment;
+        var builder = new DeploymentBuilder(deployment, Tasks);
+        configure?.Invoke(builder);
+        return builder;
+    }
+
+    public static DeploymentBuilder Deployment(string id, Action run, Action<DeploymentBuilder>? configure = null)
+    {
+        var deployment = new DelegateDeployment(id, run);
+        Deployments[id] = deployment;
+        var builder = new DeploymentBuilder(deployment, Tasks);
+        configure?.Invoke(builder);
+        return builder;
+    }
 
     public static JobBuilder Job(CodeJob job, Action<JobBuilder>? configure = null)
     {
@@ -90,7 +155,7 @@ public static class RexConsole
         return builder;
     }
 
-    public static TaskBuilder Task(string id,  Action<TaskContext> run, Action<TaskBuilder>? configure = null)
+    public static TaskBuilder Task(string id, Action<TaskContext> run, Action<TaskBuilder>? configure = null)
     {
         var task = new DelegateTask(id, run);
         Tasks[id] = task;
@@ -117,7 +182,7 @@ public static class RexConsole
             Jobs = Jobs,
         };
 
-        return RunTasksAsync(args, options, settings,  cancellationToken);
+        return RunTasksAsync(args, options, settings, cancellationToken);
     }
 
     public static Task<int> RunTasksAsync(string[] args, RexConsoleSettings settings, CancellationToken cancellationToken = default)
@@ -141,6 +206,7 @@ public static class RexConsole
             sp.RegisterSingleton(_ => new SequentialJobsPipeline());
             sp.RegisterSingleton(_ => new ExecutionDefaults { Timeout = 60 * 60 * 1000 }); // Default timeout is 1 hour
             sp.RegisterSingleton(_ => settings.SecretMasker ?? new SecretMasker());
+            sp.RegisterSingleton(_ => new DeploymentPipeline());
             sp.RegisterSingleton(_ =>
             {
                 var bus = new ConsoleMessageBus();
@@ -231,6 +297,7 @@ public static class RexConsole
 
         var globalTasks = settings.Tasks;
         var globalJobs = settings.Jobs;
+        var globalDeployments = settings.Deployments;
 
         if (globalTasks.Count == 0 && globalJobs.Count == 0)
         {
@@ -254,6 +321,10 @@ public static class RexConsole
             else if (globalJobs.ContainsKey(first))
             {
                 options.Cmd = "job";
+            }
+            else if (globalDeployments.ContainsKey(first))
+            {
+                options.Cmd = "deploy";
             }
             else
             {
@@ -306,6 +377,50 @@ public static class RexConsole
                     return 0;
                 }
 
+            case "deployment":
+            case "deploy":
+            case "destroy":
+            case "rollback":
+                {
+                    DeploymentAction action = options.DeploymentAction switch
+                    {
+                        "deploy" => DeploymentAction.Deploy,
+                        "destroy" => DeploymentAction.Destroy,
+                        "rollback" => DeploymentAction.Rollback,
+                        _ => DeploymentAction.Deploy,
+                    };
+
+                    Console.WriteLine("Deployment action: " + action);
+
+                    if (options.Targets.Length > 1)
+                    {
+                        Console.WriteLine("Multiple deployment targets are not currently supported.");
+                        return 1;
+                    }
+
+                    if (!Deployments.TryGetValue(options.Targets[0], out var deployment))
+                    {
+                        Console.WriteLine($"Deployment '{options.Targets[0]}' not found.");
+                        return 1;
+                    }
+
+                    var data = new CodeDeploymentData(deployment.Id);
+                    data.Action = action;
+                    var ctx = new DeploymentPipelineContext(runContext, deployment, data);
+                    var pipeline = serviceProvider.GetService(typeof(DeploymentPipeline)) as DeploymentPipeline;
+                    var result = await pipeline!.RunAsync(ctx, cancellationToken);
+
+                    Console.WriteLine($"{result.Status}: Deployment '{deployment.Id}' {action}ed.");
+
+                    if (result.Error is not null)
+                    {
+                        Console.WriteLine($"Deployment '{deployment.Id}' {action} failed: {result.Error}");
+                        return 1;
+                    }
+
+                    return 0;
+                }
+
             case "list":
                 {
                     if (globalTasks.Count > 0)
@@ -327,14 +442,12 @@ public static class RexConsole
                     }
                 }
 
-                break;
+                return 0;
 
             default:
                 Console.WriteLine($"Unknown command '{options.Cmd}'.");
                 return 1;
         }
-
-        return 1;
     }
 
     private static void ParseArgs(string[] args, RexConsoleOptions options)

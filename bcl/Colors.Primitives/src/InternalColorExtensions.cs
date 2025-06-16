@@ -6,9 +6,9 @@ internal static class InternalColorExtensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string AsString(this ReadOnlySpan<char> value)
-    #if NETLEGACY
+#if NETLEGACY
         => new(value.ToArray());
-    #else
+#else
         => new(value);
-    #endif
+#endif
 }

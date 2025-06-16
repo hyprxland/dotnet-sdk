@@ -1,4 +1,5 @@
 namespace Hyprx.Exec;
+
 public class PathHint
 {
     public PathHint(string name)

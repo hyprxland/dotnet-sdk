@@ -1,4 +1,5 @@
 using Hyprx.Rex.Collections;
+using Hyprx.Rex.Deployments;
 using Hyprx.Rex.Jobs;
 using Hyprx.Rex.Tasks;
 using Hyprx.Secrets;
@@ -41,6 +42,8 @@ public class RexConsoleSettings
     public TaskMap Tasks { get; set; } = TaskMap.Global;
 
     public JobMap Jobs { get; set; } = JobMap.Global;
+
+    public DeploymentMap Deployments { get; set; } = DeploymentMap.Default;
 
     public StringMap Secrets { get; set; } = new();
 

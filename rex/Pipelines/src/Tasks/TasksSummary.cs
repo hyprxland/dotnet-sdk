@@ -4,7 +4,7 @@ namespace Hyprx.Rex.Tasks;
 
 public class TasksSummary
 {
-    public List<TaskResult> Results { get; set;  } = new List<TaskResult>();
+    public List<TaskResult> Results { get; set; } = new List<TaskResult>();
 
     public Exception? Exception { get; set; }
 

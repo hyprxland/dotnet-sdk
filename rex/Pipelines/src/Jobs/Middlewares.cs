@@ -99,11 +99,11 @@ public class RunJobMiddleware : IPipelineMiddleware<JobPipelineContext>
             }
 
             if (data.If == false)
-                {
-                    context.Result.Skip();
-                    await context.Bus.SendAsync(new JobSkipped(data));
-                    return;
-                }
+            {
+                context.Result.Skip();
+                await context.Bus.SendAsync(new JobSkipped(data));
+                return;
+            }
 
             var timeout = data.Timeout;
             if (timeout < 0)

@@ -1,8 +1,10 @@
+using System.Collections;
+
 using Hyprx.Rex.Tasks;
 
 namespace Hyprx.Rex.Deployments;
 
-public class DeploymentEventTasks
+public class DeploymentEventTasks : IEnumerable<KeyValuePair<string, TaskMap>>
 {
     private readonly Dictionary<string, TaskMap> lookup;
 
@@ -95,4 +97,10 @@ public class DeploymentEventTasks
 
         return this.lookup.TryGetValue(eventName, out tasks);
     }
+
+    public IEnumerator<KeyValuePair<string, TaskMap>> GetEnumerator()
+       => this.lookup.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator()
+         => this.lookup.GetEnumerator();
 }

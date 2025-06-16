@@ -72,34 +72,34 @@ public class ConsoleMessageBus : IMessageBus
     }
 
     internal sealed class Subscription : IDisposable
-{
-    private readonly ConsoleMessageBus bus;
-
-    public Subscription(ConsoleMessageBus bus, IMessageSink subscriber, params string[] topics)
     {
-        this.Subscriber = subscriber ?? throw new ArgumentNullException(nameof(subscriber));
-        this.Topics = topics ?? throw new ArgumentNullException(nameof(topics));
-        this.bus = bus ?? throw new ArgumentNullException(nameof(bus));
-    }
+        private readonly ConsoleMessageBus bus;
 
-    public IMessageSink Subscriber { get; }
-
-    public string[] Topics { get; }
-
-    public bool WantsTopic(string topic)
-    {
-        foreach (var t in this.Topics)
+        public Subscription(ConsoleMessageBus bus, IMessageSink subscriber, params string[] topics)
         {
-            if (t == "*" || t == topic || (t.EndsWith('*') && topic.StartsWith(t[..^1])))
-                return true;
+            this.Subscriber = subscriber ?? throw new ArgumentNullException(nameof(subscriber));
+            this.Topics = topics ?? throw new ArgumentNullException(nameof(topics));
+            this.bus = bus ?? throw new ArgumentNullException(nameof(bus));
         }
 
-        return false;
-    }
+        public IMessageSink Subscriber { get; }
 
-    public void Dispose()
-    {
-        this.bus.Unsubscribe(this);
+        public string[] Topics { get; }
+
+        public bool WantsTopic(string topic)
+        {
+            foreach (var t in this.Topics)
+            {
+                if (t == "*" || t == topic || (t.EndsWith('*') && topic.StartsWith(t[..^1])))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public void Dispose()
+        {
+            this.bus.Unsubscribe(this);
+        }
     }
-}
 }

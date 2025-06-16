@@ -1,3 +1,4 @@
+using Hyprx.Rex.Deployments;
 using Hyprx.Rex.Jobs;
 using Hyprx.Rex.Tasks;
 
@@ -9,6 +10,26 @@ public class ConsoleSink : IMessageSink
     {
         switch (message)
         {
+            case DeployStarted deployStarted:
+                Console.WriteLine($">> Deployment {deployStarted.Data.Name} started");
+                return Task.FromResult(false);
+
+            case DeployCompleted deployCompleted:
+                Console.WriteLine($">> Deployment {deployCompleted.Data.Name} completed");
+                return Task.FromResult(false);
+
+            case DeployFailed deployFailed:
+                Console.WriteLine($">> Deployment {deployFailed.Data.Name} failed");
+                return Task.FromResult(false);
+
+            case DeployCancelled deployCancelled:
+                Console.WriteLine($">> Deployment {deployCancelled.Data.Name} cancelled");
+                return Task.FromResult(false);
+
+            case DeploySkipped deploySkipped:
+                Console.WriteLine($">> Deployment {deploySkipped.Data.Name} skipped");
+                return Task.FromResult(false);
+
             case JobStarted jobStarted:
                 Console.WriteLine($">> Job {jobStarted.Data.Name} started");
                 return Task.FromResult(false);

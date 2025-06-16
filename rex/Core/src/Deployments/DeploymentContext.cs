@@ -4,7 +4,7 @@ namespace Hyprx.Rex.Deployments;
 
 public class DeploymentContext : RunContext
 {
-    public DeploymentContext(RunContext ctx, DeploymentData data)
+    public DeploymentContext(RunContext ctx, CodeDeploymentData data)
         : base(ctx)
     {
         this.Data = data;
@@ -12,7 +12,7 @@ public class DeploymentContext : RunContext
 
     public DeploymentAction Action => this.Data.Action;
 
-    public DeploymentData Data { get; }
+    public CodeDeploymentData Data { get; }
 
     public DeploymentEventTasks EventTasks => this.Data.EventTasks;
 }

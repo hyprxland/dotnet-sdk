@@ -1,4 +1,5 @@
 namespace Hyprx.Exec;
+
 public class ProcessException : SystemException
 {
     public ProcessException()

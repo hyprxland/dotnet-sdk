@@ -103,7 +103,7 @@ public class DotEnvDocument : IEnumerable<DotEnvNode>,
     {
         var value = item.Value.ToCharArray();
         if (!this.nameValuePairs.TryGetValue(item.Key, out var entry) || entry is null)
-              return false;
+            return false;
 
         return entry.RawValue.SequenceEqual(value);
     }

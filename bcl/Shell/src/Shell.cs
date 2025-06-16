@@ -50,7 +50,7 @@ public static partial class Shell
         }
 
         if (!Environment.UserInteractive)
-                return false;
+            return false;
 
         return true;
     });

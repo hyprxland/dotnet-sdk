@@ -77,9 +77,9 @@ public class ExecuteTasksSequentialMiddleware : IPipelineMiddleware<SequentialTa
 
         if (cyclesResult.Count > 0)
         {
-                context.Exception = new InvalidOperationException($"Cyclical dependencies detected: {string.Join(", ", cyclesResult)}");
-                context.Status = RunStatus.Failed;
-                await context.Bus.SendAsync(new TasksFoundCyclycalReferences(cyclesResult));
+            context.Exception = new InvalidOperationException($"Cyclical dependencies detected: {string.Join(", ", cyclesResult)}");
+            context.Status = RunStatus.Failed;
+            await context.Bus.SendAsync(new TasksFoundCyclycalReferences(cyclesResult));
         }
 
         var missingDeps = tasks.DetectMissingDependencies();

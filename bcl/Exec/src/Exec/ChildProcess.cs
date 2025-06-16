@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text;
 
 namespace Hyprx.Exec;
+
 public sealed class ChildProcess : IDisposable
 {
     private readonly Process process;
@@ -55,14 +56,14 @@ public sealed class ChildProcess : IDisposable
             this.process.Start();
 
         try
-            {
-                this.StartTime = this.process.StartTime;
-            }
-            catch (Exception e)
-            {
-                this.StartTime = DateTime.Now;
-                Debug.WriteLine(e);
-            }
+        {
+            this.StartTime = this.process.StartTime;
+        }
+        catch (Exception e)
+        {
+            this.StartTime = DateTime.Now;
+            Debug.WriteLine(e);
+        }
 
         this.processId = this.process.Id;
     }
@@ -249,7 +250,7 @@ public sealed class ChildProcess : IDisposable
     public Task PipeToAsync(FileInfo file, Encoding? encoding, int bufferSize = -1, CancellationToken cancellationToken = default)
     {
         this.GuardPiped();
-        return this.process.StandardOutput.PipeToAsync(file,  encoding, bufferSize, cancellationToken);
+        return this.process.StandardOutput.PipeToAsync(file, encoding, bufferSize, cancellationToken);
     }
 
     public async Task PipeToAsync(ChildProcess child, CancellationToken cancellationToken = default)

@@ -6,12 +6,27 @@ public readonly struct DeploymentAction : IEquatable<string>
 
     public DeploymentAction(string name)
     {
-        if (!s_set.Any(o => o.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+        DeploymentAction? existing = null;
+        foreach (var action in s_set)
+        {
+            if (action.Name is null)
+            {
+                continue;
+            }
+
+            if (action.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+            {
+                existing = action;
+                break;
+            }
+        }
+
+        if (existing is null)
         {
             s_set.Add(this);
         }
 
-        this.Name = name.ToLower() ?? throw new ArgumentNullException(nameof(name));
+        this.Name = existing?.Name ?? name.ToLowerInvariant();
     }
 
     public static IReadOnlyCollection<DeploymentAction> Values => s_set;

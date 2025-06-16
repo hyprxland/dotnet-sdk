@@ -13,9 +13,13 @@ public static class DotEnvLoader
             return Serializer.DeserializeDocument(fs, options);
         }
         else if (options.Files.Count == 0 && options.Content is not null)
+        {
             return Serializer.DeserializeDocument(options.Content, options);
+        }
         else if (options.Files.Count == 0 && options.Content is null)
+        {
             return new DotEnvDocument();
+        }
 
         DotEnvDocument doc = new();
         if (options.Files.Count > 0)
@@ -24,7 +28,7 @@ public static class DotEnvLoader
             {
                 var clone = (DotEnvLoadOptions)options.Clone();
                 clone.ExpandVariables = doc;
-            
+
                 using var fs = File.OpenRead(file);
                 var d = (IDictionary<string, string>)DotEnvSerializer.DeserializeDocument(fs, options);
                 foreach (var pair in d)
