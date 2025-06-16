@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>rex</AssemblyName>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>rex</ToolCommandName>
+    <PackageOutputPath>./nupkg</PackageOutputPath>
+    <NoWarn>$(NoWarn);SA1516</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" />
+  </ItemGroup>
+
+  <ItemGroup>
+   
+  
+  </ItemGroup>
+
+</Project>
