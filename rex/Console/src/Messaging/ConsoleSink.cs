@@ -1,3 +1,5 @@
+using System.Threading.Tasks.Dataflow;
+
 using Hyprx.Rex.Deployments;
 using Hyprx.Rex.Jobs;
 using Hyprx.Rex.Tasks;
@@ -6,56 +8,147 @@ namespace Hyprx.Rex.Messaging;
 
 public class ConsoleSink : IMessageSink
 {
+    public static string DeploySymbol()
+    {
+        switch (AnsiSettings.Current.Mode)
+        {
+            case AnsiMode.FourBit:
+                return Ansi.Cyan("❯❯❯❯❯");
+
+            case AnsiMode.EightBit:
+                return Ansi.Cyan("❯❯❯❯❯");
+
+            case AnsiMode.TwentyFourBit:
+                return "\x1b[38;2;60;0;255m❯\x1b[39m\x1b[38;2;54;51;204m❯\x1b[39m\x1b[38;2;48;102;153m❯\x1b[39m\x1b[38;2;42;153;102m❯\x1b[39m\x1b[38;2;36;204;51m❯\x1b[39m";
+
+            case AnsiMode.None:
+            default:
+                return "❯❯❯❯❯";
+        }
+    }
+
+    public static string JobSymbol()
+    {
+        switch (AnsiSettings.Current.Mode)
+        {
+            case AnsiMode.FourBit:
+                return Ansi.Red("❯❯❯❯❯");
+
+            case AnsiMode.EightBit:
+                return Ansi.Red("❯❯❯❯❯");
+
+            case AnsiMode.TwentyFourBit:
+                return "\x1b[38;2;65;0;140m❯\x1b[39m\x1b[38;2;113;0;105m❯\x1b[39m\x1b[38;2;160;0;70m❯\x1b[39m\x1b[38;2;208;0;35m❯\x1b[39m\x1b[38;2;255;0;0m❯\x1b[39m";
+
+            case AnsiMode.None:
+            default:
+                return "❯❯❯❯❯";
+        }
+    }
+
+    public static string Symbol()
+    {
+        switch (AnsiSettings.Current.Mode)
+        {
+            case AnsiMode.FourBit:
+                return Ansi.Magenta("❯❯❯❯❯");
+
+            case AnsiMode.EightBit:
+                return Ansi.Magenta("❯❯❯❯❯");
+
+            case AnsiMode.TwentyFourBit:
+                return "\x1b[38;2;60;0;255m❯\x1b[39m\x1b[38;2;90;0;255m❯\x1b[39m\x1b[38;2;121;0;255m❯\x1b[39m\x1b[38;2;151;0;255m❯\x1b[39m\x1b[38;2;182;0;255m❯\x1b[39m";
+
+            case AnsiMode.None:
+            default:
+                return "❯❯❯❯❯";
+        }
+    }
+
+    public static string DeployEmoji(DeploymentAction action)
+    {
+        return action.Name.ToLowerInvariant() switch
+        {
+            "deploy" => $"{Ansi.BrightBlack("deploy")} {Ansi.Emoji("🚀")}",
+            "rollback" => $"{Ansi.BrightBlack("rollback")} {Ansi.Emoji("🪂")}",
+            "destroy" => $"{Ansi.BrightBlack("destroy")} {Ansi.Emoji("💥")}",
+            _ => Ansi.Emoji("🚀"),
+        };
+    }
+
+    public static string RexPrefix()
+    {
+        switch(AnsiSettings.Current.Mode)
+        {
+            case AnsiMode.FourBit:
+                return Ansi.Magenta("[rex]");
+            case AnsiMode.EightBit:
+                return Ansi.Rgb8(53, "[rex]");
+
+            case AnsiMode.TwentyFourBit:
+                return Ansi.Rgb(0x8200ff, "[rex]");
+
+            case AnsiMode.None:
+            default:
+                return "[rex]";
+        }
+    }
+
     public Task<bool> ReceiveAsync(IMessage message)
     {
         switch (message)
         {
             case DeployStarted deployStarted:
-                Console.WriteLine($">> Deployment {deployStarted.Data.Name} started");
+                Console.WriteLine($"{RexPrefix()} {Symbol()} {DeployEmoji(deployStarted.Action)} {deployStarted.Data.Name}");
                 return Task.FromResult(false);
 
             case DeployCompleted deployCompleted:
-                Console.WriteLine($">> Deployment {deployCompleted.Data.Name} completed");
+                Console.WriteLine($"{RexPrefix()} {Symbol()} {DeployEmoji(deployCompleted.Action)} {deployCompleted.Data.Name} {Ansi.Green("completed")}");
                 return Task.FromResult(false);
 
             case DeployFailed deployFailed:
-                Console.WriteLine($">> Deployment {deployFailed.Data.Name} failed");
+                Console.WriteLine($"{RexPrefix()} {Symbol()} {DeployEmoji(deployFailed.Action)} {deployFailed.Data.Name} {Ansi.Red("failed")}");
+                if (deployFailed.Exception != null)
+                {
+                    Console.WriteLine(Ansi.Red(deployFailed.Exception.ToString()));
+                }
+
                 return Task.FromResult(false);
 
             case DeployCancelled deployCancelled:
-                Console.WriteLine($">> Deployment {deployCancelled.Data.Name} cancelled");
+                Console.WriteLine($"{RexPrefix()} {Symbol()} {DeployEmoji(deployCancelled.Action)} {deployCancelled.Data.Name} (cancelled)");
                 return Task.FromResult(false);
 
             case DeploySkipped deploySkipped:
-                Console.WriteLine($">> Deployment {deploySkipped.Data.Name} skipped");
+                Console.WriteLine($"{RexPrefix()} {Symbol()} {DeployEmoji(deploySkipped.Action)} {deploySkipped.Data.Name} (skipped)");
                 return Task.FromResult(false);
 
             case JobStarted jobStarted:
-                Console.WriteLine($">> Job {jobStarted.Data.Name} started");
+                Console.WriteLine($"{RexPrefix()} {Symbol()} {Ansi.BrightBlack("batch")} {jobStarted.Data.Name}");
                 return Task.FromResult(false);
 
             case JobCompleted jobCompleted:
-                Console.WriteLine($">> Job {jobCompleted.Data.Name} completed");
+                Console.WriteLine($"{RexPrefix()} {Symbol()} {Ansi.BrightBlack("batch")} {jobCompleted.Data.Name} {Ansi.Green("completed")}");
                 return Task.FromResult(false);
 
             case JobFailed jobFailed:
-                Console.WriteLine($">> Job {jobFailed.Data.Name} failed");
+                Console.WriteLine($"{RexPrefix()} {Symbol()} {Ansi.BrightBlack("batch")} {jobFailed.Data.Name} {Ansi.Red("failed")}");
                 return Task.FromResult(false);
 
             case JobCancelled jobCancelled:
-                Console.WriteLine($">> Job {jobCancelled.Data.Name} cancelled");
+                Console.WriteLine($"{RexPrefix()} {Symbol()} {Ansi.BrightBlack("batch")} {jobCancelled.Data.Name} (cancelled)");
                 return Task.FromResult(false);
 
             case JobSkipped jobSkipped:
-                Console.WriteLine($">> Job {jobSkipped.Data.Name} skipped");
+                Console.WriteLine($"{RexPrefix()} {Symbol()} {Ansi.BrightBlack("batch")} {jobSkipped.Data.Name} (skipped)");
                 return Task.FromResult(false);
 
             case JobFoundMissingDependencies jobFoundMissingDependencies:
                 {
-                    Console.WriteLine($">>  Found missing dependencies in jobs:");
+                    Console.WriteLine($"{RexPrefix()} {Symbol()} Found {Ansi.Red("missing")} dependencies in jobs:");
                     foreach (var (job, missing) in jobFoundMissingDependencies.Tasks)
                     {
-                        Console.WriteLine($">>    {job.Name} is missing: {string.Join(", ", missing)}");
+                        Console.WriteLine($"{RexPrefix()} - {job.Name} is missing: {string.Join(", ", missing)}");
                     }
 
                     return Task.FromResult(false);
@@ -63,41 +156,41 @@ public class ConsoleSink : IMessageSink
 
             case JobFoundCyclycalReferences jobsFoundCyclycalReferences:
                 {
-                    Console.WriteLine($">>  Found cyclycal references in jobs:");
+                    Console.WriteLine($"{RexPrefix()} {Symbol()} Found {Ansi.Cyan("cyclical")} references in jobs:");
                     foreach (var job in jobsFoundCyclycalReferences.Job)
                     {
-                        Console.WriteLine($">>    {job.Name}");
+                        Console.WriteLine($"{RexPrefix()} - {job.Name}");
                     }
 
                     return Task.FromResult(false);
                 }
 
             case TaskCompleted taskCompleted:
-                Console.WriteLine($">>  Task {taskCompleted.Data.Name} completed");
+                Console.WriteLine($"{RexPrefix()} {Symbol()} {Ansi.BrightBlack("run")} {taskCompleted.Data.Name} {Ansi.Green("completed")}");
                 return Task.FromResult(false);
 
             case TaskSkipped taskSkipped:
-                Console.WriteLine($">>  Task {taskSkipped.Data.Name} skipped");
+                Console.WriteLine($"{RexPrefix()} {Symbol()} {Ansi.BrightBlack("run")} {taskSkipped.Data.Name} (skipped)");
                 return Task.FromResult(false);
 
             case TaskCancelled taskCancelled:
-                Console.WriteLine($">>  Task {taskCancelled.Data.Name} cancelled");
+                Console.WriteLine($"{RexPrefix()} {Symbol()} {Ansi.BrightBlack("run")} {taskCancelled.Data.Name} (cancelled)");
                 return Task.FromResult(false);
 
             case TaskFailed taskFailed:
-                Console.WriteLine($">>  Task {taskFailed.Data.Name} failed");
+                Console.WriteLine($"{RexPrefix()} {Symbol()} {Ansi.BrightBlack("run")} {taskFailed.Data.Name} {Ansi.Red("failed")}");
                 return Task.FromResult(false);
 
             case TaskStarted taskStarted:
-                Console.WriteLine($">>  Task {taskStarted.Data.Name} started");
+                Console.WriteLine($"{RexPrefix()} {Symbol()} {Ansi.BrightBlack("run")} {taskStarted.Data.Name}");
                 return Task.FromResult(false);
 
             case TasksFoundCyclycalReferences tasksFoundCyclycalReferences:
                 {
-                    Console.WriteLine($">>  Found cyclycal references in tasks:");
+                    Console.WriteLine($"{RexPrefix()} {Symbol()} Found {Ansi.Cyan("cyclical")} references in tasks:");
                     foreach (var task in tasksFoundCyclycalReferences.Tasks)
                     {
-                        Console.WriteLine($">>    {task.Name}");
+                        Console.WriteLine($"{RexPrefix()} - {task.Name}");
                     }
 
                     return Task.FromResult(false);
@@ -105,10 +198,10 @@ public class ConsoleSink : IMessageSink
 
             case TasksFoundMissingDependencies tasksFoundMissingDependencies:
                 {
-                    Console.WriteLine($">>  Found missing dependencies in tasks:");
+                    Console.WriteLine($"{RexPrefix()} {Symbol()} Found {Ansi.Red("missing")} dependencies in tasks:");
                     foreach (var (task, missing) in tasksFoundMissingDependencies.Tasks)
                     {
-                        Console.WriteLine($">>    {task.Name} is missing: {string.Join(", ", missing)}");
+                        Console.WriteLine($"{RexPrefix()} - {task.Name} is missing: {string.Join(", ", missing)}");
                     }
 
                     return Task.FromResult(false);
@@ -116,7 +209,7 @@ public class ConsoleSink : IMessageSink
 
             case DiagnosticMessage diagnosticMessage:
                 {
-                    Console.WriteLine($">>  [{diagnosticMessage.Level}] {diagnosticMessage.Message}");
+                    Console.WriteLine($"{RexPrefix()} [{diagnosticMessage.Level}] {diagnosticMessage.Message}");
                     return Task.FromResult(false);
                 }
 

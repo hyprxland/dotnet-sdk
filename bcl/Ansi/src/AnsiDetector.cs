@@ -49,8 +49,10 @@ public static class AnsiDetector
         {
             if (match[0] is '^')
             {
-                if (match.Substring(1).StartsWith(term))
+                if (term.StartsWith(match.Substring(1), StringComparison.OrdinalIgnoreCase))
+                {
                     return true;
+                }
 
                 continue;
             }

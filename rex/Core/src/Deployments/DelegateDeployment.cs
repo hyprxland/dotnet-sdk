@@ -413,7 +413,6 @@ public class DeploymentBuilder
 
         var builder = new DeploymentEventBuilder(map, this.globalTasks);
         configure(builder);
-        Console.WriteLine($"BeforeDeploy count is {map.Count}");
         return this;
     }
 

@@ -251,12 +251,12 @@ public class ExecuteDeploymentMiddleware : IPipelineMiddleware<DeploymentPipelin
             if (result.IsOk)
             {
                 context.Result.Ok(result.Value);
-                await context.Bus.SendAsync(new TaskCompleted(data));
+                await context.Bus.SendAsync(new DeployCompleted(data, data.Action));
             }
             else
             {
                 context.Result.Fail(result.Error);
-                await context.Bus.SendAsync(new TaskFailed(data, result.Error));
+                await context.Bus.SendAsync(new DeployFailed(data, data.Action, result.Error));
             }
         }
         catch (Exception ex)

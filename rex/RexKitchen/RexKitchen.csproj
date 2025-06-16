@@ -14,10 +14,4 @@
     <ProjectReference Include="$(BclDir)/Shell/src/*.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include=".env" 
-        CopyToOutputDirectory="PreserveNewest"
-         /> 
-  </ItemGroup>
-
 </Project>

@@ -390,8 +390,6 @@ public static class RexConsole
                         _ => DeploymentAction.Deploy,
                     };
 
-                    Console.WriteLine("Deployment action: " + action);
-
                     if (options.Targets.Length > 1)
                     {
                         Console.WriteLine("Multiple deployment targets are not currently supported.");
@@ -410,11 +408,8 @@ public static class RexConsole
                     var pipeline = serviceProvider.GetService(typeof(DeploymentPipeline)) as DeploymentPipeline;
                     var result = await pipeline!.RunAsync(ctx, cancellationToken);
 
-                    Console.WriteLine($"{result.Status}: Deployment '{deployment.Id}' {action}ed.");
-
                     if (result.Error is not null)
                     {
-                        Console.WriteLine($"Deployment '{deployment.Id}' {action} failed: {result.Error}");
                         return 1;
                     }
 
