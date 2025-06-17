@@ -183,25 +183,73 @@ public class Command<TCommand, TOptions> : ICommandOptionsOwner
         return pipe;
     }
 
-    public Output Output()
+    public Output Output(CommandArgs args)
     {
+        var stdout = this.Options.Stdout;
+        var stderr = this.Options.Stderr;
+
         this.Options.Stdout = Stdio.Piped;
         this.Options.Stderr = Stdio.Piped;
-        return this.Run();
+
+        var o = this.Run(args);
+
+        this.Options.Stdout = stdout;
+        this.Options.Stderr = stderr;
+        return o;
     }
 
-    public ValueTask<Output> OutputAsync(CancellationToken cancellationToken = default)
+    public Output Output()
     {
+        var stdout = this.Options.Stdout;
+        var stderr = this.Options.Stderr;
+
         this.Options.Stdout = Stdio.Piped;
         this.Options.Stderr = Stdio.Piped;
-        return this.RunAsync(cancellationToken);
+
+        var o = this.Run();
+
+        this.Options.Stdout = stdout;
+        this.Options.Stderr = stderr;
+
+        return o;
+    }
+
+    public async ValueTask<Output> OutputAsync(CommandArgs args, CancellationToken cancellationToken = default)
+    {
+        var oldStdout = this.Options.Stdout;
+        var oldStderr = this.Options.Stderr;
+
+        this.Options.Stdout = Stdio.Piped;
+        this.Options.Stderr = Stdio.Piped;
+        var output = await this.RunAsync(args, cancellationToken);
+
+        this.Options.Stdout = oldStdout;
+        this.Options.Stderr = oldStderr;
+
+        return output;
+    }
+
+    public async ValueTask<Output> OutputAsync(CancellationToken cancellationToken = default)
+    {
+        var oldStdout = this.Options.Stdout;
+        var oldStderr = this.Options.Stderr;
+
+        this.Options.Stdout = Stdio.Piped;
+        this.Options.Stderr = Stdio.Piped;
+        var output = await this.RunAsync(cancellationToken);
+
+        this.Options.Stdout = oldStdout;
+        this.Options.Stderr = oldStderr;
+
+        return output;
     }
 
     public Output Run(CommandArgs args)
     {
+        var old = this.Options.Args;
         this.Options.Args = args;
         var output = this.Run();
-        this.Options.Args.Clear();
+        this.Options.Args = old;
         return output;
     }
 
@@ -225,9 +273,13 @@ public class Command<TCommand, TOptions> : ICommandOptionsOwner
 
     public async ValueTask<Output> RunAsync(CommandArgs args, CancellationToken cancellationToken = default)
     {
+        var old = this.Options.Args;
         this.Options.Args = args;
+
         var output = await this.RunAsync(cancellationToken);
-        this.Options.Args.Clear();
+
+        this.Options.Args = old;
+
         return output;
     }
 

@@ -61,6 +61,8 @@ public static partial class Shell
         set => s_interactive = new Lazy<bool>(() => value);
     }
 
+    public static bool IsProcessElevated => Environment.IsPrivilegedProcess;
+
     public static string[] Argv => s_argv.Value;
 
     public static string ExecPath => System.Environment.CommandLine;
@@ -79,11 +81,47 @@ public static partial class Shell
     public static Command Command(CommandOptions options)
         => new Command(options);
 
+    /// <summary>
+    /// Runs a commmand line application with arguments. The output
+    /// is captured and returned.
+    /// </summary>
+    /// <param name="args">The command to pass in.</param>
+    /// <returns>The output.</returns>
+    public static Output Output(CommandArgs args)
+    {
+        ArgumentOutOfRangeException.ThrowIfNullOrEmpty(args);
+        var exe = args[0];
+        args.RemoveAt(0);
+        var cmd = new Command(exe);
+        return cmd.Output(args);
+    }
+
+    public static ValueTask<Output> OutputAsync(CommandArgs args, CancellationToken cancellationToken = default)
+    {
+        ArgumentOutOfRangeException.ThrowIfNullOrEmpty(args);
+        var exe = args[0];
+        args.RemoveAt(0);
+        var cmd = new Command(exe);
+        return cmd.OutputAsync(args, cancellationToken);
+    }
+
     public static Output Run(CommandArgs args)
-        => new Command().Run(args);
+    {
+        ArgumentOutOfRangeException.ThrowIfNullOrEmpty(args);
+        var exe = args[0];
+        args.RemoveAt(0);
+        var cmd = new Command(exe);
+        return cmd.Run(args);
+    }
 
     public static ValueTask<Output> RunAsync(CommandArgs args, CancellationToken cancellationToken = default)
-        => new Command().RunAsync(args, cancellationToken);
+    {
+        ArgumentOutOfRangeException.ThrowIfNullOrEmpty(args);
+        var exe = args[0];
+        args.RemoveAt(0);
+        var cmd = new Command(exe);
+        return cmd.RunAsync(args, cancellationToken);
+    }
 
     public static BashCommand Bash()
         => new BashCommand();
@@ -291,6 +329,14 @@ public static partial class Shell
     public static string? Which(string command, IEnumerable<string>? prependPaths = null, bool useCache = true)
         => PathFinder.Which(command, prependPaths, useCache);
 
+    /// <summary>
+    /// Finds the executable path for a given command. It uses the
+    /// PathFinder to search for the executable in the system's PATH which can
+    /// register path hints for specific commands.
+    /// If the command is not found, it returns null.
+    /// </summary>
+    /// <param name="command">The executable to look for e.g. <c>dotnet</c> or <c>git.exe</c>.</param>
+    /// <returns>The full path to the executable if found; otherwise, null.</returns>
     public static string? FindExe(string command)
         => PathFinder.Default.Find(command);
 
